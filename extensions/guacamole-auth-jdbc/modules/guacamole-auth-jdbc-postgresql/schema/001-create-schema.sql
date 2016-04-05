@@ -86,10 +86,11 @@ CREATE INDEX ON guacamole_connection_group(parent_id);
 
 CREATE TABLE guacamole_connection (
 
-  connection_id       serial       NOT NULL,
-  connection_name     varchar(128) NOT NULL,
-  parent_id           integer,
-  protocol            varchar(32)  NOT NULL,
+  connection_id         serial       NOT NULL,
+  connection_name       varchar(128) NOT NULL,
+  parent_id             integer,
+  primary_connection_id integer,
+  protocol              varchar(32)  NOT NULL,
   
   -- Concurrency limits
   max_connections          integer,
@@ -103,6 +104,11 @@ CREATE TABLE guacamole_connection (
   CONSTRAINT guacamole_connection_ibfk_1
     FOREIGN KEY (parent_id)
     REFERENCES guacamole_connection_group (connection_group_id)
+    ON DELETE CASCADE
+
+  CONSTRAINT guacamole_connection_ibfk_2
+    FOREIGN KEY (primary_connection_id)
+    REFERENCES guacamole_connection (connection_id)
     ON DELETE CASCADE
 
 );

@@ -40,6 +40,12 @@ public class ConnectionModel extends GroupedObjectModel {
     private String protocol;
 
     /**
+     * The identifier of the primary connection associated with this
+     * connection.
+     */
+    private String primaryConnectionIdentifier;
+
+    /**
      * The maximum number of connections that can be established to this
      * connection concurrently, zero if no restriction applies, or null if the
      * default restrictions should be applied.
@@ -98,6 +104,33 @@ public class ConnectionModel extends GroupedObjectModel {
      */
     public void setProtocol(String protocol) {
         this.protocol = protocol;
+    }
+
+    /**
+     * Returns the identifier of the primary connection associated with this
+     * connection. If this connection is not a sharing connection, this will be
+     * null.
+     *
+     * @return
+     *     The identifier of the primary connection associated with this
+     *     connection, or null if this connection is not a sharing connection.
+     */
+    public String getPrimaryConnectionIdentifier() {
+        return primaryConnectionIdentifier;
+    }
+
+    /**
+     * Sets the identifier of the primary connection associated with this
+     * connection. Only sharing connections will have non-null primary
+     * connection identifiers.
+     *
+     * @param primaryConnectionIdentifier
+     *     The identifier of the primary connection associated with this
+     *     connection, or null if this connection should not be a sharing
+     *     connection.
+     */
+    public void setPrimaryConnectionIdentifier(String primaryConnectionIdentifier) {
+        this.primaryConnectionIdentifier = primaryConnectionIdentifier;
     }
 
     /**

@@ -50,10 +50,11 @@ CREATE TABLE `guacamole_connection_group` (
 
 CREATE TABLE `guacamole_connection` (
 
-  `connection_id`       int(11)      NOT NULL AUTO_INCREMENT,
-  `connection_name`     varchar(128) NOT NULL,
-  `parent_id`           int(11),
-  `protocol`            varchar(32)  NOT NULL,
+  `connection_id`         int(11)      NOT NULL AUTO_INCREMENT,
+  `connection_name`       varchar(128) NOT NULL,
+  `parent_id`             int(11),
+  `primary_connection_id` int(11),
+  `protocol`              varchar(32)  NOT NULL,
   
   -- Concurrency limits
   `max_connections`          int(11),
@@ -65,6 +66,10 @@ CREATE TABLE `guacamole_connection` (
   CONSTRAINT `guacamole_connection_ibfk_1`
     FOREIGN KEY (`parent_id`)
     REFERENCES `guacamole_connection_group` (`connection_group_id`) ON DELETE CASCADE
+
+  CONSTRAINT `guacamole_connection_ibfk_2`
+    FOREIGN KEY (`primary_connection_id`)
+    REFERENCES `guacamole_connection` (`connection_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

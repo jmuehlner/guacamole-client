@@ -66,6 +66,29 @@ public interface Connection extends Identifiable, Connectable {
     public void setParentIdentifier(String parentIdentifier);
 
     /**
+     * Returns the identifier of the primary connection associated with this
+     * connection. If this connection is not a sharing connection, this will be
+     * null.
+     *
+     * @return
+     *     The identifier of the primary connection associated with this
+     *     connection, or null if this connection is not a sharing connection.
+     */
+    public String getPrimaryConnectionIdentifier();
+
+    /**
+     * Sets the identifier of the primary connection associated with this
+     * connection. Only sharing connections will have non-null primary
+     * connection identifiers.
+     *
+     * @param identifier
+     *     The identifier of the primary connection associated with this
+     *     connection, or null if this connection should not be a sharing
+     *     connection.
+     */
+    public void setPrimaryConnectionIdentifier(String identifier);
+
+    /**
      * Returns the GuacamoleConfiguration associated with this Connection. Note
      * that because configurations may contain sensitive information, some data
      * in this configuration may be omitted or tokenized.
@@ -118,5 +141,22 @@ public interface Connection extends Identifiable, Connectable {
      *                            denied.
      */
     public List<? extends ConnectionRecord> getHistory() throws GuacamoleException;
+
+    /**
+     * Returns identifiers of all readable connections that can be used to join
+     * this connection when it is active. The level of access granted to a
+     * joining user is dictated by the connection parameters associated with
+     * the sharing connection, not necessarily the parameters of the primary
+     * connection being joined.
+     *
+     * @return
+     *     A list of identifiers representing the sharing profiles for this
+     *     connection.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while fetching the sharing profiles for this
+     *     connection.
+     */
+    public List<String> getSharingConnectionIdentifiers() throws GuacamoleException;
 
 }

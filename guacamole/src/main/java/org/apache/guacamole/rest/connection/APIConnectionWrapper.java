@@ -131,5 +131,20 @@ public class APIConnectionWrapper implements Connection {
     public List<? extends ConnectionRecord> getHistory() throws GuacamoleException {
         return Collections.<ConnectionRecord>emptyList();
     }
+
+    @Override
+    public String getPrimaryConnectionIdentifier() {
+        return apiConnection.getPrimaryConnectionIdentifier();
+    }
+
+    @Override
+    public void setPrimaryConnectionIdentifier(String identifier) {
+        apiConnection.setPrimaryConnectionIdentifier(identifier);
+    }
+
+    @Override
+    public List<String> getSharingConnectionIdentifiers() throws GuacamoleException {
+        return Collections.<String>emptyList();
+    }
     
 }

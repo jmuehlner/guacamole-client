@@ -132,6 +132,21 @@ public class ModeledConnection extends ModeledGroupedDirectoryObject<ConnectionM
     }
 
     @Override
+    public String getPrimaryConnectionIdentifier() {
+        return getModel().getPrimaryConnectionIdentifier();
+    }
+
+    @Override
+    public void setPrimaryConnectionIdentifier(String identifier) {
+        getModel().setPrimaryConnectionIdentifier(identifier);
+    }
+
+    @Override
+    public List<String> getSharingConnectionIdentifiers() throws GuacamoleException {
+        return Collections.<String>emptyList();
+    }
+
+    @Override
     public GuacamoleConfiguration getConfiguration() {
 
         // If configuration has been manually set, return that

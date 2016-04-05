@@ -19,6 +19,9 @@
 
 package org.apache.guacamole.net.auth;
 
+import java.util.Collections;
+import java.util.List;
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -43,6 +46,12 @@ public abstract class AbstractConnection implements Connection {
      * this Connection.
      */
     private String parentIdentifier;
+
+    /**
+     * The identifier of the primary connection associated with this
+     * connection.
+     */
+    private String primaryConnectionIdentifier;
 
     /**
      * The GuacamoleConfiguration associated with this connection.
@@ -80,6 +89,16 @@ public abstract class AbstractConnection implements Connection {
     }
 
     @Override
+    public String getPrimaryConnectionIdentifier() {
+        return primaryConnectionIdentifier;
+    }
+
+    @Override
+    public void setPrimaryConnectionIdentifier(String primaryConnectionIdentifier) {
+        this.primaryConnectionIdentifier = primaryConnectionIdentifier;
+    }
+
+    @Override
     public GuacamoleConfiguration getConfiguration() {
         return configuration;
     }
@@ -87,6 +106,11 @@ public abstract class AbstractConnection implements Connection {
     @Override
     public void setConfiguration(GuacamoleConfiguration configuration) {
         this.configuration = configuration;
+    }
+
+    @Override
+    public List<String> getSharingConnectionIdentifiers() throws GuacamoleException {
+        return Collections.<String>emptyList();
     }
 
     @Override

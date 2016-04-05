@@ -51,6 +51,12 @@ public class APIConnection {
     private String parentIdentifier;
 
     /**
+     * The identifier of the primary connection associated with this
+     * connection.
+     */
+    private String primaryConnectionIdentifier;
+
+    /**
      * The protocol of this connection.
      */
     private String protocol;
@@ -148,6 +154,33 @@ public class APIConnection {
      */
     public void setParentIdentifier(String parentIdentifier) {
         this.parentIdentifier = parentIdentifier;
+    }
+
+    /**
+     * Returns the identifier of the primary connection associated with this
+     * connection. If this connection is not a sharing connection, this will be
+     * null.
+     *
+     * @return
+     *     The identifier of the primary connection associated with this
+     *     connection, or null if this connection is not a sharing connection.
+     */
+    public String getPrimaryConnectionIdentifier() {
+        return primaryConnectionIdentifier;
+    }
+
+    /**
+     * Sets the identifier of the primary connection associated with this
+     * connection. Only sharing connections will have non-null primary
+     * connection identifiers.
+     *
+     * @param primaryConnectionIdentifier
+     *     The identifier of the primary connection associated with this
+     *     connection, or null if this connection should not be a sharing
+     *     connection.
+     */
+    public void setPrimaryConnectionIdentifier(String primaryConnectionIdentifier) {
+        this.primaryConnectionIdentifier = primaryConnectionIdentifier;
     }
 
     /**

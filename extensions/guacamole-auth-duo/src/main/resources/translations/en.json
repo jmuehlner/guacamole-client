@@ -1,0 +1,13 @@
+{
+
+    "DATA_SOURCE_DUO" : {
+        "NAME" : "Duo TFA Backend"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_DUO_PROMPT"             : "Duo TFA",
+        "INFO_DUO_VALIDATION_CODE_INCORRECT"  : "Duo validation code incorrect.",
+        "INFO_DUO_AUTH_REQUIRED"              : "Please do the Duo."
+    }
+
+}

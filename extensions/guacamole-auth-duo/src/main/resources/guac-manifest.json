@@ -1,0 +1,25 @@
+{
+
+    "guacamoleVersion" : "0.9.10-incubating",
+
+    "name"      : "Duo TFA Authentication Backend",
+    "namespace" : "duo",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.duo.DuoAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/en.json"
+    ],
+
+    "js" : [
+        "js/duoPromptController.js",
+        "js/duo.js"
+    ],
+
+    "resources" : {
+        "templates/duoPromptField.html" : "text/html"
+    }
+
+}

@@ -15,7 +15,8 @@
 
     "js" : [
         "js/duoPromptController.js",
-        "js/duo.js"
+        "js/duo.js",
+        "js/Duo-Web-v2.js"
     ],
 
     "resources" : {

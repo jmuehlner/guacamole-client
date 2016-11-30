@@ -19,5 +19,16 @@
 
 angular.module('form').controller('duoPromptController', ['$scope', '$injector',
     function duoPromptController($scope, $injector) {
-        // Someday do something maybe
+        function doit(it) {
+            console.log(it);
+        }
+
+        window.setTimeout(function() {
+            Duo.init({
+                iframe: document.getElementById("duo_iframe"),
+                host: $scope.field.host,
+                sig_request: $scope.field.sigRequest,
+                submit_callback: doit
+            });
+        }, 1000);
 }]);

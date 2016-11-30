@@ -1,5 +1,6 @@
 package org.apache.guacamole.auth.duo;
 
+import com.duosecurity.duoweb.DuoWeb;
 import java.util.Collections;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleClientException;
@@ -21,11 +22,6 @@ import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredential
 public class DuoAuthenticationProvider implements AuthenticationProvider {
 
     private static final String DUO_PROMPT_FIELD_NAME = "duo-prompt";
-
-    private static final CredentialsInfo DUO_PROMPT_INFO =
-            new CredentialsInfo(Collections.<Field>singletonList(new DuoPromptField(
-                DUO_PROMPT_FIELD_NAME)
-            ));
 
     @Override
     public String getIdentifier() {
@@ -52,12 +48,29 @@ public class DuoAuthenticationProvider implements AuthenticationProvider {
         Credentials credentials = authenticatedUser.getCredentials();
         HttpServletRequest request = credentials.getRequest();
 
+
         // Require that the duo prompt
         String duoPromptValue = request.getParameter(DUO_PROMPT_FIELD_NAME);
-        if (duoPromptValue == null)
+        if (duoPromptValue == null) {
+
+            String sigRequest = DuoWeb.signRequest(
+                    "iKey", // iKey
+                    "sKey", // sKey
+                    "aKey", // aKey
+                    authenticatedUser.getIdentifier() // username
+            );
+
+            CredentialsInfo DUO_PROMPT_INFO =
+                new CredentialsInfo(Collections.<Field>singletonList(new DuoPromptField(
+                    DUO_PROMPT_FIELD_NAME,
+                    "host",
+                    sigRequest)
+                ));
+
             throw new GuacamoleInsufficientCredentialsException(
                     "LOGIN.INFO_DUO_AUTH_REQUIRED",
                     DUO_PROMPT_INFO);
+        }
 
         // Randomly fail/allow authentication if field is provided
         if (Math.random() > 0.5d)

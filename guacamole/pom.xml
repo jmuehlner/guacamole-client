@@ -154,7 +154,6 @@
                             <filtering>true</filtering>
                             <includes>
                                 <include>translations/*.json</include>
-                                <include>index.html</include>
                             </includes>
                         </resource>
 
@@ -191,7 +190,7 @@
                             <type>zip</type>
                         </overlay>
                     </overlays>
-            
+
                 </configuration>
                 <executions>
                     <execution>

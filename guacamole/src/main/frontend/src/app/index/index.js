@@ -17,9 +17,6 @@
  * under the License.
  */
 
-require('angular-module-shim.js');
-require('relocateParameters.js');
-
 /**
  * The module for the root of the application.
  */

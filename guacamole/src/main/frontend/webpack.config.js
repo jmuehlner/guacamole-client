@@ -18,12 +18,10 @@
  */
 
 const AngularTemplateCacheWebpackPlugin = require('angular-templatecache-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ClosureWebpackPlugin = require('closure-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const DependencyListPlugin = require('./plugins/dependency-list-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpack = require('webpack');
 
@@ -112,9 +110,6 @@ module.exports = {
             standalone: true
         }),
 
-        // Automatically clean out dist/ directory
-        new CleanWebpackPlugin(),
-
         // Copy static files to dist/
         new CopyPlugin([
             { from: 'fonts/**/*' },
@@ -122,23 +117,6 @@ module.exports = {
             { from: 'translations/**/*' }
         ], {
             context: 'src/'
-        }),
-
-        // Copy core libraries for global inclusion
-        new CopyPlugin([
-            { from: 'angular/angular.min.js' },
-            { from: 'blob-polyfill/Blob.js' },
-            { from: 'datalist-polyfill/datalist-polyfill.min.js' },
-            { from: 'jquery/dist/jquery.min.js' },
-            { from: 'lodash/lodash.min.js' }
-        ], {
-            context: 'node_modules/'
-        }),
-
-        // Generate index.html from template
-        new HtmlWebpackPlugin({
-            inject: false,
-            template: 'src/index.html'
         }),
 
         // Extract CSS from Webpack bundle as separate file

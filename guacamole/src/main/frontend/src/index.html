@@ -17,7 +17,7 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<html ng-app="index" ng-controller="indexController">
+<html ng-controller="indexController">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta http-equiv="x-ua-compatible" content="IE=edge"/>
@@ -27,15 +27,6 @@
         <link rel="icon" type="image/png" href="images/logo-64.png"/>
         <link rel="icon" type="image/png" sizes="144x144" href="images/logo-144.png"/>
         <link rel="apple-touch-icon" type="image/png" href="images/logo-144.png"/>
-
-        <!-- Web application CSS (bundled by Webpack) -->
-        <% for (var index in htmlWebpackPlugin.files.css) { %>
-        <link rel="stylesheet" type="text/css" href="<%= htmlWebpackPlugin.files.css[index] %>"/>
-        <% } %>
-
-        <!-- Extension CSS (must be able to override webapp CSS) -->
-        <link rel="stylesheet" type="text/css" href="app.css?v=${project.version}">
-
         <title ng-bind="page.title | translate"></title>
     </head>
     <body ng-class="page.bodyClassName">
@@ -74,26 +65,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Polyfills -->
-        <script type="text/javascript" src="Blob.js"></script>
-        <script type="text/javascript" src="datalist-polyfill.min.js"></script>
-
-        <!-- Core libraries that MUST be available at the global level (for use
-        by extensions) -->
-        <script type="text/javascript" src="guacamole-common-js/all.min.js"></script>
-        <script type="text/javascript" src="jquery.min.js"></script>
-        <script type="text/javascript" src="lodash.min.js"></script>
-        <script type="text/javascript" src="angular.min.js"></script>
-
-        <!-- Web application (bundled by Webpack) -->
-        <% for (var index in htmlWebpackPlugin.files.js) { %>
-        <script type="text/javascript" src="<%= htmlWebpackPlugin.files.js[index] %>"></script>
-        <% } %>
-        <script type="text/javascript" src="templates.js"></script>
-
-        <!-- Extension JavaScript -->
-        <script type="text/javascript" src="app.js?v=${project.version}"></script>
 
     </body>
 </html>

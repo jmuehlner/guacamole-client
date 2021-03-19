@@ -87,7 +87,6 @@
                             <filtering>true</filtering>
                             <includes>
                                 <include>translations/*.json</include>
-                                <include>index.html</include>
                             </includes>
                         </resource>
 
@@ -97,9 +96,21 @@
                             <targetPath>META-INF</targetPath>
                         </resource>
 
-                        <!-- Add frontend folder to war package -->
+                        <!-- Add frontend folder to war package ... -->
                         <resource>
                             <directory>src/main/frontend/dist</directory>
+                            <excludes>
+                                <exclude>index.html</exclude>
+                            </excludes>
+                        </resource>
+
+                        <!-- ... but filter index.html -->
+                        <resource>
+                            <directory>src/main/frontend/dist</directory>
+                            <filtering>true</filtering>
+                            <includes>
+                                <include>index.html</include>
+                            </includes>
                         </resource>
 
                     </webResources>

@@ -28,7 +28,6 @@
         <link rel="icon" type="image/png" sizes="144x144" href="images/logo-144.png"/>
         <link rel="apple-touch-icon" type="image/png" href="images/logo-144.png"/>
         <link rel="stylesheet" type="text/css" href="guacamole.min.css"/>
-        <link rel="stylesheet" type="text/css" href="app.css?v=${project.version}">
         <title ng-bind="page.title | translate"></title>
     </head>
     <body ng-class="page.bodyClassName">
@@ -69,9 +68,6 @@
         </div>
 
         <script type="text/javascript" src="guacamole-common-js/all.min.js"></script>
-
-        <!-- Web application -->
-        <script type="text/javascript" src="app.js?v=${project.version}"></script>
 
     </body>
 </html>

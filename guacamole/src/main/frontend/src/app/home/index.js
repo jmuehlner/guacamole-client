@@ -17,7 +17,18 @@
  * under the License.
  */
 
-/**
- * Module for displaying the Guacamole text input method.
- */
-angular.module('textInput', []);
+module.exports = angular.module('home', [
+    require('app/client'),
+    require('app/groupList'),
+    require('app/history'),
+    require('app/navigation'),
+    require('app/rest')
+]).name;
+
+require('./styles/home.css');
+
+require('./controllers/homeController.js');
+require('./directives/guacRecentConnections.js');
+require('./types/ActiveConnection.js');
+require('./types/RecentConnection.js');
+

@@ -18,9 +18,10 @@
  */
 
 /**
- * Module for displaying, sorting, and filtering the contents of a list, split
- * into multiple pages.
+ * Module for handling common touch gestures, like panning or pinch-to-zoom.
  */
-angular.module('list', [
-    'auth'
-]);
+module.exports = angular.module('touch', []).name;
+
+require('./directives/guacTouchDrag.js');
+require('./directives/guacTouchPinch.js');
+

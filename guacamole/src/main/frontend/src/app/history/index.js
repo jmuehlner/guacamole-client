@@ -18,8 +18,12 @@
  */
 
 /**
- * Module which provides generic storage services.
+ * The module for code relating to connection history.
  */
-angular.module('storage', [
-    'auth'
-]);
+module.exports = angular.module('history', [
+    require('app/storage')
+]).name;
+
+require('./services/guacHistory.js');
+require('./types/HistoryEntry.js');
+

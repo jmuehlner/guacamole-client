@@ -17,4 +17,19 @@
  * under the License.
  */
 
-angular.module('home', ['client', 'groupList', 'history', 'navigation', 'rest']);
+/**
+ * Module for manipulating element state, such as focus or scroll position, as
+ * well as handling browser events.
+ */
+module.exports = angular.module('element', []).name;
+
+require('./styles/resize-sensor.css');
+
+require('./directives/guacFocus.js');
+require('./directives/guacMarker.js');
+require('./directives/guacResize.js');
+require('./directives/guacScroll.js');
+require('./directives/guacUpload.js');
+require('./types/Marker.js');
+require('./types/ScrollState.js');
+

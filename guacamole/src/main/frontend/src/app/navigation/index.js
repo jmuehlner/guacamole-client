@@ -18,6 +18,25 @@
  */
 
 /**
- * Module for handling common localization-related tasks.
+ * Module for generating and implementing user navigation options.
  */
-angular.module('locale', []);
+module.exports = angular.module('navigation', [
+    require('app/auth'),
+    require('app/form'),
+    require('app/notification'),
+    require('app/rest')
+]).name;
+
+require('./styles/menu.css');
+require('./styles/tabs.css');
+require('./styles/user-menu.css');
+
+require('./directives/guacMenu.js');
+require('./directives/guacPageList.js');
+require('./directives/guacSectionTabs.js');
+require('./directives/guacUserMenu.js');
+require('./services/userPageService.js');
+require('./types/ClientIdentifier.js');
+require('./types/MenuAction.js');
+require('./types/PageDefinition.js');
+

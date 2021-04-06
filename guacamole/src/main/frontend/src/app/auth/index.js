@@ -18,7 +18,14 @@
  */
 
 /**
- * Module for manipulating element state, such as focus or scroll position, as
- * well as handling browser events.
+ * The module for authentication and management of tokens.
  */
-angular.module('element', []);
+module.exports = 'auth';
+angular.module('auth', [
+    require('app/rest'),
+    require('app/storage')
+]);
+
+require('./service/authenticationService.js');
+require('./types/AuthenticationResult.js');
+

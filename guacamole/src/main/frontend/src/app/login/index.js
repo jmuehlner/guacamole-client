@@ -18,9 +18,18 @@
  */
 
 /**
- * Module for displaying dynamic forms.
+ * The module for the login functionality.
  */
-angular.module('form', [
-    'locale',
-    'rest'
-]);
+module.exports = angular.module('login', [
+    require('app/element'),
+    require('app/form'),
+    require('app/navigation')
+]).name;
+
+require('./styles/animation.css');
+require('./styles/dialog.css');
+require('./styles/input.css');
+require('./styles/login.css');
+
+require('./directives/login.js');
+

@@ -18,9 +18,11 @@
  */
 
 /**
- * The module for code used to display arbitrary notifications.
+ * Module for displaying the Guacamole on-screen keyboard.
  */
-angular.module('notification', [
-    'rest',
-    'storage'
-]);
+module.exports = angular.module('osk', []).name;
+
+require('./styles/osk.css');
+
+require('./directives/guacOsk.js');
+

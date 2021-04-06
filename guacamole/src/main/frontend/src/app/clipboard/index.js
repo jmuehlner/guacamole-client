@@ -18,10 +18,13 @@
  */
 
 /**
- * The module for code relating to communication with the REST API of the
- * Guacamole web application.
+ * The module for code used to manipulate/observe the clipboard.
  */
-angular.module('rest', [
-    'auth',
-    'locale'
-]);
+module.exports = angular.module('clipboard', []).name;
+
+require('./styles/clipboard.css');
+
+require('./directives/guacClipboard.js');
+require('./services/clipboardService.js');
+require('./types/ClipboardData.js');
+

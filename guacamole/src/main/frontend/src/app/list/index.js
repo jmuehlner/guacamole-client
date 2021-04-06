@@ -18,14 +18,24 @@
  */
 
 /**
- * The module for the administration functionality.
+ * Module for displaying, sorting, and filtering the contents of a list, split
+ * into multiple pages.
  */
-angular.module('manage', [
-    'form',
-    'groupList',
-    'list',
-    'locale',
-    'navigation',
-    'notification',
-    'rest'
-]);
+module.exports = angular.module('list', [
+    require('app/auth')
+]).name;
+
+require('./styles/filter.css');
+require('./styles/pager.css');
+require('./styles/user-item.css');
+
+require('./directives/guacFilter.js');
+require('./directives/guacPager.js');
+require('./directives/guacSortOrder.js');
+require('./directives/guacUserItem.js');
+require('./types/FilterPattern.js');
+require('./types/FilterToken.js');
+require('./types/IPv4Network.js');
+require('./types/IPv6Network.js');
+require('./types/SortOrder.js');
+

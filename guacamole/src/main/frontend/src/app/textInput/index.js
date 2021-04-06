@@ -18,11 +18,12 @@
  */
 
 /**
- * Module for generating and implementing user navigation options.
+ * Module for displaying the Guacamole text input method.
  */
-angular.module('navigation', [
-    'auth',
-    'form',
-    'notification',
-    'rest'
-]);
+module.exports = angular.module('textInput', []).name;
+
+require('./styles/textInput.css');
+
+require('./directives/guacKey.js');
+require('./directives/guacTextInput.js');
+

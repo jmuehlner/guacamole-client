@@ -18,17 +18,10 @@
  */
 
 /**
- * The module for code used to connect to a connection or balancing group.
+ * Module for handling common localization-related tasks.
  */
-angular.module('client', [
-    'auth',
-    'clipboard',
-    'element',
-    'history',
-    'navigation',
-    'notification',
-    'osk',
-    'rest',
-    'textInput',
-    'touch'
-]);
+module.exports = angular.module('locale', []).name;
+
+require('./services/translationLoader.js');
+require('./services/translationStringService.js');
+

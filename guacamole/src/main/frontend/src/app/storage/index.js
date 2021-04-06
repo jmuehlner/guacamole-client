@@ -18,6 +18,12 @@
  */
 
 /**
- * Module for handling common touch gestures, like panning or pinch-to-zoom.
+ * Module which provides generic storage services.
  */
-angular.module('touch', []);
+module.exports = angular.module('storage', [
+    require('app/auth')
+]).name;
+
+require('./services/localStorageService.js');
+require('./services/sessionStorageFactory.js');
+

@@ -18,21 +18,16 @@
  */
 
 /**
- * The module for the root of the application.
+ * Module for displaying the contents of a connection group, allowing the user
+ * to select individual connections or groups.
  */
-angular.module('index', [
-    'auth',
-    'client',
-    'clipboard',
-    'home',
-    'login',
-    'manage',
-    'navigation',
-    'ngRoute',
-    'ngTouch',
-    'notification',
-    'pascalprecht.translate',
-    'rest',
-    'settings',
-    'templates-main'
-]);
+module.exports = angular.module('groupList', [
+    require('app/navigation'),
+    require('app/list'),
+    require('app/rest')
+]).name;
+
+require('./directives/guacGroupList.js');
+require('./directives/guacGroupListFilter.js');
+require('./types/GroupListItem.js');
+

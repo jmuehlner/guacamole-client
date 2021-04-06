@@ -18,14 +18,19 @@
  */
 
 /**
- * The module for manipulation of general settings. This is distinct from the
- * "manage" module, which deals only with administrator-level system management.
+ * The module for code used to display arbitrary notifications.
  */
-angular.module('settings', [
-    'groupList',
-    'list',
-    'navigation',
-    'notification',
-    'rest',
-    'storage'
-]);
+module.exports = angular.module('notification', [
+    require('app/rest'),
+    require('app/storage')
+]).name;
+
+require('./styles/notification.css');
+
+require('./directives/guacNotification.js');
+require('./services/guacNotification.js');
+require('./types/Notification.js');
+require('./types/NotificationAction.js');
+require('./types/NotificationCountdown.js');
+require('./types/NotificationProgress.js');
+

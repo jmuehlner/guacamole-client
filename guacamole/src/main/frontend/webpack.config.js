@@ -27,26 +27,11 @@ const webpack = require('webpack');
 
 module.exports = {
 
-    bail: true,
-    mode: 'production',
-    stats: 'minimal',
-
-    output: {
-        path: __dirname + '/dist',
-        filename: 'guacamole.[contenthash].js',
-    },
-
-    // Generate source maps
-    devtool: 'source-map',
-
-    // Entry point for the Guacamole webapp is the "index" AngularJS module
-    entry: './src/app/index',
-
     module: {
         rules: [
 
             // Automatically extract imported CSS for later reference within separate CSS file
-            {
+            /*{
                 test: /\.css$/i,
                 use: [
                     MiniCssExtractPlugin.loader,
@@ -58,11 +43,8 @@ module.exports = {
                         }
                     }
                 ]
-            },
-
-            /*
-             * Necessary to be able to use angular 1 with webpack as explained in https://github.com/webpack/webpack/issues/2049
-             */
+            },*/
+            // Necessary to be able to use angular 1 with webpack as explained in https://github.com/webpack/webpack/issues/2049
             {
                 test: require.resolve('angular'),
                 loader: 'exports-loader',
@@ -74,7 +56,7 @@ module.exports = {
 
         ]
     },
-    optimization: {
+/*    optimization: {
         minimizer: [
 
             // Minify using Google Closure Compiler
@@ -100,7 +82,7 @@ module.exports = {
 
             }
         }
-    },
+    },*/
     plugins: [
 
         new AngularTemplateCacheWebpackPlugin({
@@ -119,11 +101,11 @@ module.exports = {
             context: 'src/'
         }),
 
-        // Extract CSS from Webpack bundle as separate file
+/*        // Extract CSS from Webpack bundle as separate file
         new MiniCssExtractPlugin({
             filename: 'guacamole.[contenthash].css',
             chunkFilename: '[id].guacamole.[contenthash].css'
-        }),
+        }),*/
 
         // List all bundled node modules for sake of automatic LICENSE file
         // generation / sanity checks

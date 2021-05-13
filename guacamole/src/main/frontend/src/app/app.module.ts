@@ -23,6 +23,8 @@ import { UpgradeModule } from '@angular/upgrade/static';
 
 declare var angular: any;
 
+import index from './index/index.js';
+
 @NgModule({
     imports: [
         BrowserModule,
@@ -41,7 +43,7 @@ export class AppModule {
 
         // Upgrade legacy AngularJS portions of web application until full
         // migration to Angular is complete
-        this.upgrade.bootstrap(document.documentElement, ['index'], { strictDi: true });
+        this.upgrade.bootstrap(document.documentElement, [index], { strictDi: true });
 
     }
 

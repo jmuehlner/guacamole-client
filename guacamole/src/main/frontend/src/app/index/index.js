@@ -44,19 +44,6 @@ module.exports = angular.module('index', [
 require('angular-translate-interpolation-messageformat');
 require('angular-translate-loader-static-files');
 
-require('./styles/animation.css');
-require('./styles/buttons.css');
-require('./styles/dialog.css');
-require('./styles/fatal-page-error.css');
-require('./styles/font-carlito.css');
-require('./styles/headers.css');
-require('./styles/input.css');
-require('./styles/lists.css');
-require('./styles/loading.css');
-require('./styles/sorted-tables.css');
-require('./styles/status.css');
-require('./styles/ui.css');
-
 require('./config/httpDefaults.js');
 require('./config/indexRouteConfig.js');
 require('./config/indexTranslationConfig.js');

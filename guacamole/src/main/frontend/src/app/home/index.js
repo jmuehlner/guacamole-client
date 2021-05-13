@@ -25,8 +25,6 @@ module.exports = angular.module('home', [
     require('app/rest')
 ]).name;
 
-require('./styles/home.css');
-
 require('./controllers/homeController.js');
 require('./directives/guacRecentConnections.js');
 require('./types/ActiveConnection.js');

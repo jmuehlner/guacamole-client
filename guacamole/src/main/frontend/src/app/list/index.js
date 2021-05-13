@@ -25,10 +25,6 @@ module.exports = angular.module('list', [
     require('app/auth')
 ]).name;
 
-require('./styles/filter.css');
-require('./styles/pager.css');
-require('./styles/user-item.css');
-
 require('./directives/guacFilter.js');
 require('./directives/guacPager.js');
 require('./directives/guacSortOrder.js');

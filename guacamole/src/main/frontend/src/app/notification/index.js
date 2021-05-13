@@ -25,8 +25,6 @@ module.exports = angular.module('notification', [
     require('app/storage')
 ]).name;
 
-require('./styles/notification.css');
-
 require('./directives/guacNotification.js');
 require('./services/guacNotification.js');
 require('./types/Notification.js');

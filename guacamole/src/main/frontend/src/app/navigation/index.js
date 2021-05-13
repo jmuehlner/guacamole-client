@@ -27,10 +27,6 @@ module.exports = angular.module('navigation', [
     require('app/rest')
 ]).name;
 
-require('./styles/menu.css');
-require('./styles/tabs.css');
-require('./styles/user-menu.css');
-
 require('./directives/guacMenu.js');
 require('./directives/guacPageList.js');
 require('./directives/guacSectionTabs.js');

@@ -30,17 +30,6 @@ module.exports = angular.module('settings', [
     require('app/storage')
 ]).name;
 
-require('./styles/buttons.css');
-require('./styles/connection-list.css');
-require('./styles/history.css');
-require('./styles/input-method.css');
-require('./styles/mouse-mode.css');
-require('./styles/preferences.css');
-require('./styles/sessions.css');
-require('./styles/settings.css');
-require('./styles/user-group-list.css');
-require('./styles/user-list.css');
-
 require('./controllers/settingsController.js');
 require('./directives/guacSettingsConnectionHistory.js');
 require('./directives/guacSettingsConnections.js');

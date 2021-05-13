@@ -56,8 +56,9 @@ export default (targetOptions: TargetOptions, indexHtml: string) => {
     // Include extension JavaScript after all other JS, including Angular, to
     // ensure extensions can leverage/override built-in functionality
     updatedHtml = insertBefore(updatedHtml, '</body>',
-          '<script type="text/javascript" src="guacamole-common-js/all.min.js"></script>'
-        + '<script type="text/javascript" src="app.js?v=${project.version}"></script>');
+          '<script type="text/javascript" src="guacamole-common-js/all.min.js" defer></script>'
+        + '<script type="text/javascript" src="app.js?v=${project.version}" defer></script>'
+        + '<script type="text/javascript" src="templates.js" defer></script>');
 
     // Insert CSS at end of head such that extension CSS can override
     // built-in CSS

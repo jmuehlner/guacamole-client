@@ -25,11 +25,6 @@ module.exports = angular.module('form', [
     require('app/rest')
 ]).name;
 
-require('./styles/form-field.css');
-require('./styles/form.css');
-require('./styles/redirect-field.css');
-require('./styles/terminal-color-scheme-field.css');
-
 require('./controllers/checkboxFieldController.js');
 require('./controllers/dateFieldController.js');
 require('./controllers/languageFieldController.js');

@@ -148,15 +148,6 @@
 
                     <webResources>
 
-                        <!-- Filter translation strings -->
-                        <resource>
-                            <directory>src/main/webapp</directory>
-                            <filtering>true</filtering>
-                            <includes>
-                                <include>translations/*.json</include>
-                            </includes>
-                        </resource>
-
                         <!-- Include all licenses within META-INF -->
                         <resource>
                             <directory>${project.build.directory}/licenses</directory>
@@ -168,15 +159,17 @@
                             <directory>src/main/frontend/dist</directory>
                             <excludes>
                                 <exclude>index.html</exclude>
+                                <exclude>translations/*.json</exclude>
                             </excludes>
                         </resource>
 
-                        <!-- ... but filter index.html -->
+                        <!-- ... but filter index.html and translations -->
                         <resource>
                             <directory>src/main/frontend/dist</directory>
                             <filtering>true</filtering>
                             <includes>
                                 <include>index.html</include>
+                                <include>translations/*.json</include>
                             </includes>
                         </resource>
 

@@ -33,24 +33,6 @@ module.exports = angular.module('client', [
     require('app/touch')
 ]).name;
 
-require('./styles/client.css');
-require('./styles/connection-select-menu.css');
-require('./styles/connection-warning.css');
-require('./styles/display.css');
-require('./styles/file-browser.css');
-require('./styles/file-transfer-dialog.css');
-require('./styles/filesystem-menu.css');
-require('./styles/guac-menu.css');
-require('./styles/keyboard.css');
-require('./styles/menu.css');
-require('./styles/notification.css');
-require('./styles/other-connections.css');
-require('./styles/share-menu.css');
-require('./styles/thumbnail-display.css');
-require('./styles/transfer-manager.css');
-require('./styles/transfer.css');
-require('./styles/viewport.css');
-
 require('./controllers/clientController.js');
 require('./directives/guacClient.js');
 require('./directives/guacClientPanel.js');

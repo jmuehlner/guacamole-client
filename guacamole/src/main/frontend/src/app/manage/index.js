@@ -30,14 +30,6 @@ module.exports = angular.module('manage', [
     require('app/rest')
 ]).name;
 
-require('./styles/attributes.css');
-require('./styles/connection-parameter.css');
-require('./styles/forms.css');
-require('./styles/locationChooser.css');
-require('./styles/manage-user-group.css');
-require('./styles/manage-user.css');
-require('./styles/related-objects.css');
-
 require('./controllers/manageConnectionController.js');
 require('./controllers/manageConnectionGroupController.js');
 require('./controllers/manageSharingProfileController.js');

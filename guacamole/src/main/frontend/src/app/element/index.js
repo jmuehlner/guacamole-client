@@ -23,8 +23,6 @@
  */
 module.exports = angular.module('element', []).name;
 
-require('./styles/resize-sensor.css');
-
 require('./directives/guacFocus.js');
 require('./directives/guacMarker.js');
 require('./directives/guacResize.js');

@@ -22,8 +22,6 @@
  */
 module.exports = angular.module('clipboard', []).name;
 
-require('./styles/clipboard.css');
-
 require('./directives/guacClipboard.js');
 require('./services/clipboardService.js');
 require('./types/ClipboardData.js');

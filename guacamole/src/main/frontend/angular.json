@@ -24,7 +24,7 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "customWebpackConfig": {
-                "path": "./webpack.config.js"
+              "path": "./webpack.config.js"
             },
             "aot": true,
             "assets": [
@@ -32,19 +32,86 @@
               "src/assets"
             ],
             "styles": [
+              "node_modules/@simonwep/pickr/dist/themes/monolith.min.css",
+              "src/app/notification/styles/notification.css",
+              "src/app/textInput/styles/textInput.css",
+              "src/app/element/styles/resize-sensor.css",
+              "src/app/client/styles/file-browser.css",
+              "src/app/client/styles/client.css",
+              "src/app/client/styles/viewport.css",
+              "src/app/client/styles/connection-select-menu.css",
+              "src/app/client/styles/share-menu.css",
+              "src/app/client/styles/transfer.css",
+              "src/app/client/styles/filesystem-menu.css",
+              "src/app/client/styles/transfer-manager.css",
+              "src/app/client/styles/thumbnail-display.css",
+              "src/app/client/styles/guac-menu.css",
+              "src/app/client/styles/display.css",
+              "src/app/client/styles/keyboard.css",
+              "src/app/client/styles/other-connections.css",
+              "src/app/client/styles/file-transfer-dialog.css",
+              "src/app/client/styles/menu.css",
+              "src/app/client/styles/notification.css",
+              "src/app/client/styles/connection-warning.css",
+              "src/app/index/styles/animation.css",
+              "src/app/index/styles/status.css",
+              "src/app/index/styles/lists.css",
+              "src/app/index/styles/ui.css",
+              "src/app/index/styles/font-carlito.css",
+              "src/app/index/styles/dialog.css",
+              "src/app/index/styles/fatal-page-error.css",
+              "src/app/index/styles/loading.css",
+              "src/app/index/styles/headers.css",
+              "src/app/index/styles/buttons.css",
+              "src/app/index/styles/sorted-tables.css",
+              "src/app/index/styles/input.css",
+              "src/app/login/styles/animation.css",
+              "src/app/login/styles/login.css",
+              "src/app/login/styles/dialog.css",
+              "src/app/login/styles/input.css",
+              "src/app/home/styles/home.css",
+              "src/app/clipboard/styles/clipboard.css",
+              "src/app/settings/styles/mouse-mode.css",
+              "src/app/settings/styles/history.css",
+              "src/app/settings/styles/input-method.css",
+              "src/app/settings/styles/sessions.css",
+              "src/app/settings/styles/user-group-list.css",
+              "src/app/settings/styles/buttons.css",
+              "src/app/settings/styles/settings.css",
+              "src/app/settings/styles/preferences.css",
+              "src/app/settings/styles/connection-list.css",
+              "src/app/settings/styles/user-list.css",
+              "src/app/navigation/styles/user-menu.css",
+              "src/app/navigation/styles/menu.css",
+              "src/app/navigation/styles/tabs.css",
+              "src/app/form/styles/form-field.css",
+              "src/app/form/styles/terminal-color-scheme-field.css",
+              "src/app/form/styles/form.css",
+              "src/app/form/styles/redirect-field.css",
+              "src/app/list/styles/user-item.css",
+              "src/app/list/styles/filter.css",
+              "src/app/list/styles/pager.css",
+              "src/app/osk/styles/osk.css",
+              "src/app/manage/styles/connection-parameter.css",
+              "src/app/manage/styles/forms.css",
+              "src/app/manage/styles/manage-user.css",
+              "src/app/manage/styles/attributes.css",
+              "src/app/manage/styles/manage-user-group.css",
+              "src/app/manage/styles/locationChooser.css",
+              "src/app/manage/styles/related-objects.css",
               "src/styles.less"
             ],
             "scripts": [
-
-              "static/angular-module-shim.js",
-              "static/relocateParameters.js",
 
               "node_modules/blob-polyfill/Blob.js",
               "node_modules/datalist-polyfill/datalist-polyfill.min.js",
 
               "node_modules/jquery/dist/jquery.min.js",
               "node_modules/lodash/lodash.min.js",
-              "node_modules/angular/angular.min.js"
+              "node_modules/angular/angular.min.js",
+
+              "static/angular-module-shim.js",
+              "static/relocateParameters.js"
 
             ]
           },
@@ -109,8 +176,7 @@
             "styles": [
               "src/styles.less"
             ],
-            "scripts": [
-	    ]
+            "scripts": []
           }
         },
         "lint": {
@@ -141,5 +207,8 @@
       }
     }
   },
-  "defaultProject": "guacamole"
+  "defaultProject": "guacamole",
+  "cli": {
+    "analytics": false
+  }
 }

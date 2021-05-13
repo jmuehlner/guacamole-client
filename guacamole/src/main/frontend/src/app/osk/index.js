@@ -22,7 +22,5 @@
  */
 module.exports = angular.module('osk', []).name;
 
-require('./styles/osk.css');
-
 require('./directives/guacOsk.js');
 

@@ -91,6 +91,10 @@ class DependencyListPlugin {
          */
         const logger = compiler.getInfrastructureLogger(PLUGIN_NAME);
 
+        fs.mkdir(this.options.path || compiler.options.output.path, { recursive: true }, (err) => {
+            // Ignore?
+        });
+
         /**
          * The full path to the output file that should contain the list of
          * discovered NPM module dependencies.

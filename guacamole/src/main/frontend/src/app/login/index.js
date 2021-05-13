@@ -26,10 +26,5 @@ module.exports = angular.module('login', [
     require('app/navigation')
 ]).name;
 
-require('./styles/animation.css');
-require('./styles/dialog.css');
-require('./styles/input.css');
-require('./styles/login.css');
-
 require('./directives/login.js');
 

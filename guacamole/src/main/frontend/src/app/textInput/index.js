@@ -22,8 +22,6 @@
  */
 module.exports = angular.module('textInput', []).name;
 
-require('./styles/textInput.css');
-
 require('./directives/guacKey.js');
 require('./directives/guacTextInput.js');
 

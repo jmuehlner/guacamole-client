@@ -35,9 +35,7 @@ module.exports = angular.module('index', [
     require('app/navigation'),
     require('app/notification'),
     require('app/rest'),
-    require('app/settings'),
-
-    'templates-main'
+    require('app/settings')
 
 ]).name;
 

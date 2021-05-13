@@ -85,15 +85,9 @@ module.exports = {
     },*/
     plugins: [
 
-        new AngularTemplateCacheWebpackPlugin({
-            module: 'templates-main',
-            root: 'app/',
-            source: 'src/app/**/*.html',
-            standalone: true
-        }),
-
         // Copy static files to dist/
         new CopyPlugin([
+            { from: 'app/**/*.html' },
             { from: 'fonts/**/*' },
             { from: 'images/**/*' },
             { from: 'translations/**/*' }

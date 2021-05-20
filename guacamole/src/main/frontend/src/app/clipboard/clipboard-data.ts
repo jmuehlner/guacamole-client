@@ -17,18 +17,26 @@
  * under the License.
  */
 
-import { ClipboardEditorComponent } from './clipboard-editor/clipboard-editor.component';
-import { downgradeComponent } from '@angular/upgrade/static';
-
 /**
- * The module for code used to manipulate/observe the clipboard.
+ * Arbitrary data which can be contained by the clipboard.
  */
-const name = 'clipboard';
-export default name;
+export class ClipboardData {
 
-angular.module('clipboard', []);
-angular.module('clipboard').directive('guacClipboardEditor', downgradeComponent({ component: ClipboardEditorComponent }));
+    /**
+     * The mimetype of the data currently stored within the clipboard.
+     */
+    type : string = 'text/plain';
 
-require('./services/clipboardService.js');
-require('./types/ClipboardData.js');
+    /**
+     * The data currently stored within the clipboard. Depending on the
+     * nature of the stored data, this may be either a string, a Blob, or a
+     * File.
+     */
+    data : string | Blob | File = '';
+
+    constructor(template : ClipboardData | object = {}) {
+        Object.assign(this, template);
+    }
+
+}
 

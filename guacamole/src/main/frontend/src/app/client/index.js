@@ -22,7 +22,7 @@
  */
 module.exports = angular.module('client', [
     require('app/auth'),
-    require('app/clipboard'),
+    require('app/clipboard')['default'],
     require('app/element'),
     require('app/history'),
     require('app/navigation'),

@@ -38,26 +38,32 @@ public class KsmAttributeService implements VaultAttributeService {
 
     /**
      * The name of the attribute which can contain a KSM configuration blob
-     * associated with a connection group.
+     * associated with either a connection group or user.
      */
     public static final String KSM_CONFIGURATION_ATTRIBUTE = "ksm-config";
 
     /**
      * All attributes related to configuring the KSM vault on a
-     * per-connection-group basis.
+     * per-connection-group or per-user basis.
      */
     public static final Form KSM_CONFIGURATION_FORM = new Form("ksm-config",
             Arrays.asList(new TextField(KSM_CONFIGURATION_ATTRIBUTE)));
 
     /**
-     * All KSM-specific connection group attributes, organized by form.
+     * All KSM-specific attributes for users or connection groups, organized by form.
      */
-    public static final Collection<Form> KSM_CONNECTION_GROUP_ATTRIBUTES =
+    public static final Collection<Form> KSM_ATTRIBUTES =
             Collections.unmodifiableCollection(Arrays.asList(KSM_CONFIGURATION_FORM));
 
     @Override
     public Collection<Form> getConnectionGroupAttributes() {
-        return KSM_CONNECTION_GROUP_ATTRIBUTES;
+        return KSM_ATTRIBUTES;
     }
+
+    @Override
+    public Collection<Form> getUserAttributes() {
+        return KSM_ATTRIBUTES;
+    }
+
 
 }

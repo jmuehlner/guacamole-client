@@ -33,16 +33,17 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
         controller: ['$scope', '$injector', function settingsPreferencesController($scope, $injector) {
 
             // Get required types
-            var PermissionSet = $injector.get('PermissionSet');
+            const PermissionSet = $injector.get('PermissionSet');
 
             // Required services
-            var $translate            = $injector.get('$translate');
-            var authenticationService = $injector.get('authenticationService');
-            var guacNotification      = $injector.get('guacNotification');
-            var permissionService     = $injector.get('permissionService');
-            var preferenceService     = $injector.get('preferenceService');
-            var requestService        = $injector.get('requestService');
-            var userService           = $injector.get('userService');
+            const $translate            = $injector.get('$translate');
+            const authenticationService = $injector.get('authenticationService');
+            const guacNotification      = $injector.get('guacNotification');
+            const permissionService     = $injector.get('permissionService');
+            const preferenceService     = $injector.get('preferenceService');
+            const requestService        = $injector.get('requestService');
+            const schemaService         = $injector.get('schemaService');
+            const userService           = $injector.get('userService');
 
             /**
              * An action to be provided along with the object sent to
@@ -77,6 +78,15 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
              * @type Object.<String, Object>
              */
             $scope.preferences = preferenceService.preferences;
+
+            /**
+             * All available user attributes. This is only the set of attribute
+             * definitions, organized as logical groupings of attributes, not attribute
+             * values.
+             *
+             * @type Form[]
+             */
+            $scope.attributes = [];
 
             /**
              * The fields which should be displayed for choosing locale
@@ -196,6 +206,15 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                     && $scope.languages         !== null;
 
             };
+
+            // Get all datasources that are available for this user
+            authenticationService.getAvailableDataSources().forEach(function loadAttributesForDataSource(dataSource) {
+
+                // For each datasource, append any forms to the end of the current list
+                $scope.attributes = $scope.attributes.concat(schemaService.getUserAttributes(dataSource));
+
+            });
+
 
         }]
     };

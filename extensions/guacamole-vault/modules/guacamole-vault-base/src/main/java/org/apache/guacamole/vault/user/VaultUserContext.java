@@ -23,9 +23,11 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -490,6 +492,17 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
         // Defer to the vault-specific directory service
         return directoryService.getSharingProfileDirectory(super.getSharingProfileDirectory());
+
+    }
+
+    public Collection<Form> getUserAttributes() {
+
+        // Add any custom attributes to any previously defined attributes
+        return Collections.unmodifiableCollection(Stream.concat(
+                super.getUserAttributes().stream(),
+                attributeService.getUserAttributes().stream()
+        ).collect(Collectors.toList()));
+
     }
 
 }

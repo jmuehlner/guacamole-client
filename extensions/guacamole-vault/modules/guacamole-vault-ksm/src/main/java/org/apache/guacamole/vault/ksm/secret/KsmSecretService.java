@@ -278,8 +278,10 @@ public class KsmSecretService implements VaultSecretService {
 
             // If the current connection group has the KSM configuration attribute, return immediately
             String ksmConfig = group.getAttributes().get(KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE);
-            if (ksmConfig != null)
-                return ksmConfig;
+            if (ksmConfig != null) {
+
+                if (Base64.isbase64(ksmConfig))
+            }
 
             // Otherwise, keep searching up the tree until an appropriate configuration is found
             parentIdentifier = group.getParentIdentifier();

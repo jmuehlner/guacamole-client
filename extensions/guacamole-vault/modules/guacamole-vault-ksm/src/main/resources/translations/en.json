@@ -6,7 +6,10 @@
 
     "CONNECTION_GROUP_ATTRIBUTES" : {
         "SECTION_HEADER_KSM_CONFIG" : "Keeper Secrets Manager",
-        "FIELD_HEADER_KSM_CONFIG"   : "KSM Service Configuration "
+        "FIELD_HEADER_KSM_CONFIG"   : "KSM Service Configuration ",
+
+        "ERROR_INVALID_KSM_CONFIG_BLOB": "Invalid KSM config blob provided",
+        "ERROR_INVALID_KSM_ONE_TIME_TOKEN": "Invalid KSM one-time token provided"
     }
 
 }

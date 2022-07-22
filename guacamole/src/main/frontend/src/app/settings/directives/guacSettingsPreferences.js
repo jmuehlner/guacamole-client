@@ -89,7 +89,16 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
              *
              * @type Map<String, Object>
              */
-            $scope.attributes = new Map();
+            $scope.attributeMap = new Map();
+
+            /**
+             * All available user attributes. This is only the set of attribute
+             * definitions, organized as logical groupings of attributes, not attribute
+             * values.
+             *
+             * @type Form[]
+             */
+            $scope.attributes = null;
 
             /**
              * The fields which should be displayed for choosing locale
@@ -220,8 +229,8 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                     attributes.forEach(function addAttribute(attributeForm) {
 
                         // If the form with the retrieved name already exists
-                        if ($scope.attributes.has(attributeForm.name)) {
-                            const existingFields = $scope.attributes.get(attributeForm.name).fields;
+                        if ($scope.attributeMap.has(attributeForm.name)) {
+                            const existingFields = $scope.attributeMap.get(attributeForm.name).fields;
 
                             // Add each field to the existing list for this form
                             attributeForm.fields.forEach(function addAllFieldsToExistingMap(field) {
@@ -232,7 +241,7 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                         else {
 
                             // Create a new entry for the form
-                            $scope.attributes.set(attributeForm.name, {
+                            $scope.attributeMap.set(attributeForm.name, {
                                 name: attributeForm.name,
 
                                 // With the field array from the API converted into a Map
@@ -248,27 +257,21 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
 
                     });
 
+                    // Re-generate the attributes array every time
+                    $scope.attributes = Array.of(...$scope.attributeMap.values()).map(function convertFieldsToArray(formObject) {
+
+                        // Convert each temporary form object to a Form type
+                        return new Form({
+                            name: formObject.name,
+
+                            // Convert the field map to a simple array of fields
+                            fields: Array.of(...formObject.fields.values())
+                        })
+                    });
+
                 });
 
             });
-
-            $scope.getUserAttributes = function getUserAttributes() {
-
-                // Convert the Map to an array of forms, in insertion order
-                const userAttributes =  Array.of(...$scope.attributes.values()).map(function convertFieldsToArray(formObject) {
-
-                    // Convert each temporary form object to a Form type
-                    return new Form({
-                        name: formObject.name,
-
-                        // Convert the field map to a simple array of fields
-                        fields: Array.of(...formObject.fields.values())
-                    })
-                });
-
-                return userAttributes;
-            }
-
 
         }]
     };

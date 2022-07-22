@@ -90,8 +90,8 @@
     </div>
 
     <!-- User attributes section -->
-    <div class="attributes" ng-show="attributes.size">
-        <guac-form namespace="'USER_ATTRIBUTES'" content="getUserAttributes()"
+    <div class="attributes" ng-show="attributes.length">
+        <guac-form namespace="'USER_ATTRIBUTES'" content="attributes"
                    model="user.attributes"></guac-form>
     </div>
 

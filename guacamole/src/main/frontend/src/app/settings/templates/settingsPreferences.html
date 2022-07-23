@@ -95,4 +95,7 @@
                    model="user.attributes"></guac-form>
     </div>
 
+    <!-- User attributes save button -->
+    <button ng-show="attributes.length" ng-click="saveUser()" class="save">{{'SETTINGS_PREFERENCES.ACTION_SAVE' | translate}}</button>
+
 </div>

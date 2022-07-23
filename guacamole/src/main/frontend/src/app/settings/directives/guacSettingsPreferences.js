@@ -226,6 +226,19 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
 
             };
 
+
+            /**
+             * Saves the current user, returning a promise which is resolved if the
+             * save operation succeeds and rejected if the save operation fails.
+             *
+             * @returns {Promise}
+             *     A promise which is resolved if the save operation succeeds and is
+             *     rejected with an {@link Error} if the save operation fails.
+             */
+            $scope.saveUser = function saveUser() {
+                return userService.saveUser(dataSource, $scope.user);
+            };
+
             // Fetch the user record
             userService.getUser(dataSource, username).then(function saveUser(user) {
                 $scope.user = user;

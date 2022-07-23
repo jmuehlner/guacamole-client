@@ -59,6 +59,13 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
             };
 
             /**
+             * The user being modified.
+             *
+             * @type User
+             */
+            $scope.user = null;
+
+            /**
              * The username of the current user.
              *
              * @type String
@@ -218,6 +225,11 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                     && $scope.languages         !== null;
 
             };
+
+            // Fetch the user record
+            userService.getUser(dataSource, username).then(function saveUser(user) {
+                $scope.user = user;
+            })
 
             // Get all datasources that are available for this user
             authenticationService.getAvailableDataSources().forEach(function loadAttributesForDataSource(dataSource) {

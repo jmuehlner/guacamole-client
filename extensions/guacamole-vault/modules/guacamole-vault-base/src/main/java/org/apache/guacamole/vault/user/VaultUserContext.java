@@ -23,11 +23,9 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -409,7 +407,6 @@ public class VaultUserContext extends TokenInjectingUserContext {
         TokenFilter filter = createFilter();
         filter.setToken(CONNECTION_NAME_TOKEN, connection.getName());
         filter.setToken(CONNECTION_IDENTIFIER_TOKEN, identifier);
-
         // Add hostname and username tokens if available (implementations are
         // not required to expose connection configuration details)
 
@@ -438,17 +435,6 @@ public class VaultUserContext extends TokenInjectingUserContext {
         // those secrets as parameter tokens
         tokens.putAll(resolve(getTokens(connection, confService.getTokenMapping(),
                 filter, config, new TokenFilter(tokens))));
-
-    }
-
-    @Override
-    public Collection<Form> getConnectionGroupAttributes() {
-
-        // Add any custom attributes to any previously defined attributes
-        return Collections.unmodifiableCollection(Stream.concat(
-                super.getConnectionGroupAttributes().stream(),
-                attributeService.getConnectionGroupAttributes().stream()
-        ).collect(Collectors.toList()));
 
     }
 
@@ -501,6 +487,27 @@ public class VaultUserContext extends TokenInjectingUserContext {
         return Collections.unmodifiableCollection(Stream.concat(
                 super.getUserAttributes().stream(),
                 attributeService.getUserAttributes().stream()
+        ).collect(Collectors.toList()));
+
+    }
+
+    public Collection<Form> getUserPreferenceAttributes() {
+
+        // Add any custom preference attributes to any previously defined attributes
+        return Collections.unmodifiableCollection(Stream.concat(
+                super.getUserPreferenceAttributes().stream(),
+                attributeService.getUserPreferenceAttributes().stream()
+        ).collect(Collectors.toList()));
+
+    }
+
+    @Override
+    public Collection<Form> getConnectionGroupAttributes() {
+
+        // Add any custom attributes to any previously defined attributes
+        return Collections.unmodifiableCollection(Stream.concat(
+                super.getConnectionGroupAttributes().stream(),
+                attributeService.getConnectionGroupAttributes().stream()
         ).collect(Collectors.toList()));
 
     }

@@ -49,4 +49,14 @@ public interface VaultAttributeService {
      *     the current vault implementation.
      */
     public Collection<Form> getUserAttributes();
+
+    /**
+     * Return all user preference attributes to be exposed through the user
+     * preferences UI for the current vault implementation.
+     *
+     * @return
+     *     All user preference attributes to be exposed through the user
+     *     preferences UI for the current vault implementation.
+     */
+    public Collection<Form> getUserPreferenceAttributes();
 }

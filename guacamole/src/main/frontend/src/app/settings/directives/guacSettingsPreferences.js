@@ -248,7 +248,7 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
             authenticationService.getAvailableDataSources().forEach(function loadAttributesForDataSource(dataSource) {
 
                 // Fetch all user attribute forms defined for the datasource
-                schemaService.getUserAttributes(dataSource).then(function saveAttributes(attributes) {
+                schemaService.getUserPreferenceAttributes(dataSource).then(function saveAttributes(attributes) {
 
                     // Iterate through all attribute forms
                     attributes.forEach(function addAttribute(attributeForm) {

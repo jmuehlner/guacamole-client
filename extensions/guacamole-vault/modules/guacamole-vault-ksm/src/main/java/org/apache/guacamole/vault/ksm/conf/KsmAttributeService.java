@@ -65,5 +65,10 @@ public class KsmAttributeService implements VaultAttributeService {
         return KSM_ATTRIBUTES;
     }
 
+    @Override
+    public Collection<Form> getUserPreferenceAttributes() {
+        return KSM_ATTRIBUTES;
+    }
+
 
 }

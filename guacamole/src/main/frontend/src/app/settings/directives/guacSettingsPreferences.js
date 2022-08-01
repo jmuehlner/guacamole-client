@@ -228,19 +228,22 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
 
 
             /**
-             * Saves the current user, returning a promise which is resolved if the
-             * save operation succeeds and rejected if the save operation fails.
-             *
-             * @returns {Promise}
-             *     A promise which is resolved if the save operation succeeds and is
-             *     rejected with an {@link Error} if the save operation fails.
+             * Saves the current user, displaying an acknowledgement message if
+             * saving was successful, or an error if the save failed.
              */
             $scope.saveUser = function saveUser() {
-                return userService.saveUser(dataSource, $scope.user);
+                return userService.saveUser(dataSource, $scope.user)
+                    .then(() =>  guacNotification.showStatus({
+                        text    : {
+                            key : 'SETTINGS_PREFERENCES.INFO_PREFERENCE_ATTRIBUTES_CHANGED'
+                        },
+                        actions : [ ACKNOWLEDGE_ACTION ]
+                    }),
+                    guacNotification.SHOW_REQUEST_ERROR);
             };
 
             // Fetch the user record
-            userService.getUser(dataSource, username).then(function saveUser(user) {
+            userService.getUser(dataSource, username).then(function saveUserData(user) {
                 $scope.user = user;
             })
 

@@ -23,10 +23,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.form.TextField;
 import org.apache.guacamole.vault.conf.VaultAttributeService;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 /**
@@ -35,6 +37,10 @@ import com.google.inject.Singleton;
  */
 @Singleton
 public class KsmAttributeService implements VaultAttributeService {
+
+
+    @Inject
+    private KsmConfigurationService configurationService;
 
     /**
      * The name of the attribute which can contain a KSM configuration blob
@@ -67,7 +73,17 @@ public class KsmAttributeService implements VaultAttributeService {
 
     @Override
     public Collection<Form> getUserPreferenceAttributes() {
-        return KSM_ATTRIBUTES;
+
+        try {
+
+            // Expose the user attributes IFF user-level KSM configuration is enabled
+            return configurationService.getAllowUserConfig() ? KSM_ATTRIBUTES : Collections.emptyList();
+
+        } catch (GuacamoleException e) {
+
+            // If the configuration can't be parsed, default to not exposing the attribute
+            return Collections.emptyList();
+        }
     }
 
 

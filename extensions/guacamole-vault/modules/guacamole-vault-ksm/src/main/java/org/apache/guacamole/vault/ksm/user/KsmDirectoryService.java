@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.language.TranslatableGuacamoleClientException;
 import org.apache.guacamole.net.auth.Attributes;
+import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.DecoratingDirectory;
 import org.apache.guacamole.net.auth.Directory;
@@ -231,6 +232,36 @@ public class KsmDirectoryService extends VaultDirectoryService {
     }
 
     @Override
+    public Directory<Connection> getConnectionDirectory(
+            Directory<Connection> underlyingDirectory) throws GuacamoleException {
+
+        // A Connection directory that will intercept add and update calls to
+        // validate KSM configurations, and translate one-time-tokens, if possible
+        return new DecoratingDirectory<Connection>(underlyingDirectory) {
+
+            @Override
+            protected Connection decorate(Connection connection) throws GuacamoleException {
+
+                // Wrap in a KsmConnection class to ensure that all defined KSM fields will be
+                // present
+                return new KsmConnection(
+                        connection,
+                        ksmAttributeService.getConnectionAttributes().stream().flatMap(
+                                form -> form.getFields().stream().map(field -> field.getName())
+                        ).collect(Collectors.toList()));
+            }
+
+            @Override
+            protected Connection undecorate(Connection connection) throws GuacamoleException {
+
+                // Unwrap the KsmUser
+                return ((KsmConnection) connection).getUnderlyingConnection();
+            }
+
+        };
+    }
+
+    @Override
     public Directory<ConnectionGroup> getConnectionGroupDirectory(
             Directory<ConnectionGroup> underlyingDirectory) throws GuacamoleException {
 
@@ -282,7 +313,7 @@ public class KsmDirectoryService extends VaultDirectoryService {
     public Directory<User> getUserDirectory(
             Directory<User> underlyingDirectory) throws GuacamoleException {
 
-        // A ConnectionGroup directory that will intercept add and update calls to
+        // A User directory that will intercept add and update calls to
         // validate KSM configurations, and translate one-time-tokens, if possible
         return new DecoratingDirectory<User>(underlyingDirectory) {
 

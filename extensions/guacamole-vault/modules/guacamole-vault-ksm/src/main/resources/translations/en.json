@@ -4,6 +4,11 @@
         "NAME" : "Keeper Secrets Manager"
     },
 
+    "CONNECTION_ATTRIBUTES" : {
+        "SECTION_HEADER_KSM_CONFIG"            : "Keeper Secrets Manager",
+        "FIELD_HEADER_KSM_USER_CONFIG_ENABLED" : "Allow user-provided KSM configuration"
+    },
+
     "CONNECTION_GROUP_ATTRIBUTES" : {
         "SECTION_HEADER_KSM_CONFIG" : "Keeper Secrets Manager",
         "FIELD_HEADER_KSM_CONFIG"   : "KSM Service Configuration ",

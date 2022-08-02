@@ -294,6 +294,34 @@ public class KsmSecretService implements VaultSecretService {
 
     }
 
+    /**
+     * Returns true if user-level KSM configuration is enabled for the given
+     * Connectable, false otherwise.
+     *
+     * @param connectable
+     *     The connectable to check for whether user-level KSM configs are
+     *     enabled.
+     *
+     * @return
+     *     True if user-level KSM configuration is enabled for the given
+     *     Connectable, false otherwise.
+     */
+    private boolean isKsmUserConfigEnabled(Connectable connectable) {
+
+        // If it's a connection, user-level config is enabled IFF the appropriate
+        // attribute is set to true
+        if (connectable instanceof Connection)
+            return KsmAttributeService.TRUTH_VALUE.equals(((Connection) connectable).getAttributes().get(
+                KsmAttributeService.KSM_USER_CONFIG_ENABLED_ATTRIBUTE));
+
+        // KSM token replacement is not enabled for balancing groups, so for
+        // now, user-level KSM configs will be explicitly disabled.
+        // TODO: If token replacement is implemented for balancing groups,
+        // implement this functionality for them as well.
+        return false;
+
+    }
+
     @Override
     public Map<String, Future<String>> getTokens(UserContext userContext, Connectable connectable,
             GuacamoleConfiguration config, TokenFilter filter) throws GuacamoleException {
@@ -308,15 +336,16 @@ public class KsmSecretService implements VaultSecretService {
         List<KsmClient> ksmClients = new ArrayList<>(2);
         ksmClients.add(getClient(ksmConfig));
 
-        // Only use the user-specific KSM config if explicitly enabled
-        if (confService.getAllowUserConfig()) {
+        // Only use the user-specific KSM config if explicitly enabled in the global
+        // configuration, AND for the specific connectable being connected to
+        if (confService.getAllowUserConfig() && isKsmUserConfigEnabled(connectable)) {
 
             // Find a user-specific KSM config, if one exists
             String userKsmConfig = userContext.self().getAttributes().get(
                     KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE);
 
             // If a user-specific config exsts, process it first
-            if (userKsmConfig != null)
+            if (userKsmConfig != null && !userKsmConfig.trim().isEmpty())
                 ksmClients.add(0, getClient(userKsmConfig));
 
         }

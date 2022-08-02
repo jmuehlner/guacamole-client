@@ -241,7 +241,7 @@ public class VaultUserContext extends TokenInjectingUserContext {
      *
      * @throws GuacamoleException
      *     If the value for any applicable secret cannot be retrieved from the
-     *     vault due to an error.
+     *     vault due to an error.1
      */
     private Map<String, Future<String>> getTokens(
             Connectable connectable, Map<String, String> tokenMapping,
@@ -481,6 +481,7 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
     }
 
+    @Override
     public Collection<Form> getUserAttributes() {
 
         // Add any custom attributes to any previously defined attributes
@@ -491,12 +492,24 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
     }
 
+    @Override
     public Collection<Form> getUserPreferenceAttributes() {
 
         // Add any custom preference attributes to any previously defined attributes
         return Collections.unmodifiableCollection(Stream.concat(
                 super.getUserPreferenceAttributes().stream(),
                 attributeService.getUserPreferenceAttributes().stream()
+        ).collect(Collectors.toList()));
+
+    }
+
+    @Override
+    public Collection<Form> getConnectionAttributes() {
+
+        // Add any custom attributes to any previously defined attributes
+        return Collections.unmodifiableCollection(Stream.concat(
+                super.getConnectionAttributes().stream(),
+                attributeService.getConnectionAttributes().stream()
         ).collect(Collectors.toList()));
 
     }

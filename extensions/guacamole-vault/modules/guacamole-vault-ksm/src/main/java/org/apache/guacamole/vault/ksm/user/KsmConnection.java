@@ -22,48 +22,48 @@ package org.apache.guacamole.vault.ksm.user;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.guacamole.net.auth.DelegatingUser;
-import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.net.auth.DelegatingConnection;
+import org.apache.guacamole.net.auth.Connection;
 
 import com.google.common.collect.Maps;
 
 /**
- * A User that explicitly adds a blank entry for any defined
- * KSM user attributes.
+ * A Connection that explicitly adds a blank entry for any defined
+ * KSM connection attributes.
  */
-public class KsmUser extends DelegatingUser {
+public class KsmConnection extends DelegatingConnection {
 
     /**
-     * The names of all user attributes defined for the vault.
+     * The names of all connection attributes defined for the vault.
      */
-    private List<String> userAttributeNames;
+    private List<String> connectionAttributeNames;
 
     /**
-     * Create a new Vault user wrapping the provided User record. Any
-     * attributes defined in the provided user attribute forms will have empty
+     * Create a new Vault connection wrapping the provided Connection record. Any
+     * attributes defined in the provided connection attribute forms will have empty
      * values automatically populated when getAttributes() is called.
      *
-     * @param user
-     *     The user record to wrap.
+     * @param connection
+     *     The connection record to wrap.
      *
-     * @param userAttributeNames
-     *     The names of all user attributes to automatically expose.
+     * @param connectionAttributeNames
+     *     The names of all connection attributes to automatically expose.
      */
-    KsmUser(User user, List<String> userAttributeNames) {
+    KsmConnection(Connection connection, List<String> connectionAttributeNames) {
 
-        super(user);
-        this.userAttributeNames = userAttributeNames;
+        super(connection);
+        this.connectionAttributeNames = connectionAttributeNames;
 
     }
 
     /**
-     * Return the underlying wrapped user record.
+     * Return the underlying wrapped connection record.
      *
      * @return
-     *     The wrapped user record.
+     *     The wrapped connection record.
      */
-    User getUnderlyingUser() {
-        return getDelegateUser();
+    Connection getUnderlyingConnection() {
+        return getDelegateConnection();
     }
 
     @Override
@@ -73,7 +73,7 @@ public class KsmUser extends DelegatingUser {
         Map<String, String> attributeMap = Maps.newHashMap(super.getAttributes());
 
         // Add every defined attribute
-        userAttributeNames.forEach(
+        connectionAttributeNames.forEach(
                 attributeName -> attributeMap.putIfAbsent(attributeName, null));
 
         return attributeMap;

@@ -26,7 +26,10 @@ import com.keepersecurity.secretsManager.core.SecretsManagerOptions;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -301,36 +304,59 @@ public class KsmSecretService implements VaultSecretService {
         // Attempt to find a KSM config for this connection or group
         String ksmConfig = getConnectionGroupKsmConfig(userContext, connectable);
 
-        // Get a client instance for this KSM config
-        KsmClient ksm = getClient(ksmConfig);
+        // Create a list containing just the global / connection group config
+        List<KsmClient> ksmClients = new ArrayList<>(2);
+        ksmClients.add(getClient(ksmConfig));
 
-        // Retrieve and define server-specific tokens, if any
-        String hostname = parameters.get("hostname");
-        if (hostname != null && !hostname.isEmpty())
-            addRecordTokens(tokens, "KEEPER_SERVER_",
-                    ksm.getRecordByHost(filter.filter(hostname)));
+        // Only use the user-specific KSM config if explicitly enabled
+        if (confService.getAllowUserConfig()) {
 
-        // Retrieve and define user-specific tokens, if any
-        String username = parameters.get("username");
-        if (username != null && !username.isEmpty())
-            addRecordTokens(tokens, "KEEPER_USER_",
-                    ksm.getRecordByLogin(filter.filter(username)));
+            // Find a user-specific KSM config, if one exists
+            String userKsmConfig = userContext.self().getAttributes().get(
+                    KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE);
 
-        // Tokens specific to RDP
-        if ("rdp".equals(config.getProtocol())) {
+            // If a user-specific config exsts, process it first
+            if (userKsmConfig != null)
+                ksmClients.add(0, getClient(userKsmConfig));
 
-            // Retrieve and define gateway server-specific tokens, if any
-            String gatewayHostname = parameters.get("gateway-hostname");
-            if (gatewayHostname != null && !gatewayHostname.isEmpty())
-                addRecordTokens(tokens, "KEEPER_GATEWAY_",
-                        ksm.getRecordByHost(filter.filter(gatewayHostname)));
+        }
 
-            // Retrieve and define gateway user-specific tokens, if any
-            String gatewayUsername = parameters.get("gateway-username");
-            if (gatewayUsername != null && !gatewayUsername.isEmpty())
-                addRecordTokens(tokens, "KEEPER_GATEWAY_USER_",
-                        ksm.getRecordByLogin(filter.filter(gatewayUsername)));
+        // Iterate through the KSM clients, processing using the user-specific
+        // config first (if it exists), to ensure that any admin-defined values
+        // will override the user-speicifc values
+        Iterator<KsmClient> ksmIterator = ksmClients.iterator();
+        while (ksmIterator.hasNext()) {
 
+            KsmClient ksm = ksmIterator.next();
+
+            // Retrieve and define server-specific tokens, if any
+            String hostname = parameters.get("hostname");
+            if (hostname != null && !hostname.isEmpty())
+                addRecordTokens(tokens, "KEEPER_SERVER_",
+                        ksm.getRecordByHost(filter.filter(hostname)));
+
+            // Retrieve and define user-specific tokens, if any
+            String username = parameters.get("username");
+            if (username != null && !username.isEmpty())
+                addRecordTokens(tokens, "KEEPER_USER_",
+                        ksm.getRecordByLogin(filter.filter(username)));
+
+            // Tokens specific to RDP
+            if ("rdp".equals(config.getProtocol())) {
+
+                // Retrieve and define gateway server-specific tokens, if any
+                String gatewayHostname = parameters.get("gateway-hostname");
+                if (gatewayHostname != null && !gatewayHostname.isEmpty())
+                    addRecordTokens(tokens, "KEEPER_GATEWAY_",
+                            ksm.getRecordByHost(filter.filter(gatewayHostname)));
+
+                // Retrieve and define gateway user-specific tokens, if any
+                String gatewayUsername = parameters.get("gateway-username");
+                if (gatewayUsername != null && !gatewayUsername.isEmpty())
+                    addRecordTokens(tokens, "KEEPER_GATEWAY_USER_",
+                            ksm.getRecordByLogin(filter.filter(gatewayUsername)));
+
+            }
         }
 
         return tokens;

@@ -80,6 +80,14 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     $scope.acceptedCredentials = null;
 
     /**
+     * The additional connection information that is required before the
+     * in-progress connection can be fully established.
+     *
+     * @type Field[]
+     */
+    $scope.expectedConnectionInformation = null;
+
+    /**
      * The credentials that the authentication service is currently expecting,
      * if any. If the user is logged in, this will be null.
      *
@@ -93,6 +101,13 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
      * @enum {string}
      */
     var ApplicationState = {
+
+        /**
+         * The application is in the process of establishing a connection, but
+         * more information must be supplied before the connection can be fully
+         * established.
+         */
+        AWAITING_CONNECTION_INFORMATION : 'awaitingConnectionInformation',
 
         /**
          * The application has fully loaded but is awaiting credentials from
@@ -249,6 +264,19 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         $scope.loginHelpText = null;
         $scope.acceptedCredentials = {};
         $scope.expectedCredentials = error.expected;
+
+    });
+
+    // Prompt for additional connection information if existing connection parameters were insuffucient
+    $scope.$on('guacInsufficientConnectionInformation', function connectionInformationInsuffucient(
+            event, parameters, error) {
+
+        $scope.applicationState = ApplicationState.AWAITING_CONNECTION_INFORMATION;
+        $scope.page.title = 'APP.NAME';
+        $scope.page.bodyClassName = '';
+
+        $scope.loginHelpText = error.translatableMessage;
+        $scope.requiredConnectionInformation = error.expected;
 
     });
 

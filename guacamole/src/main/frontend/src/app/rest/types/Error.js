@@ -101,6 +101,14 @@ angular.module('rest').factory('Error', [function defineError() {
         INVALID_CREDENTIALS : 'INVALID_CREDENTIALS',
 
         /**
+         * Previously-provided connection parameters and any other information
+         * were insufficient to establish the connection.
+         *
+         * @type String
+         */
+        INSUFFICIENT_CONNECTION_INFORMATION : 'INSUFFICIENT_CONNECTION_INFORMATION',
+
+        /**
          * The credentials provided were not necessarily invalid, but were not
          * sufficient to determine validity.
          *

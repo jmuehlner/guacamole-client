@@ -28,6 +28,7 @@ import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.language.Translatable;
 import org.apache.guacamole.language.TranslatableMessage;
+import org.apache.guacamole.net.GuacamoleInsufficientConnectionInformationException;
 import org.apache.guacamole.net.auth.credentials.GuacamoleCredentialsException;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
@@ -91,6 +92,12 @@ public class APIError {
          * The credentials provided were invalid.
          */
         INVALID_CREDENTIALS,
+
+        /**
+         * The current connection parameters and any other connection
+         * infromation are insufficient to establish a connection.
+         */
+        INSUFFICIENT_CONNECTION_INFORMATION,
 
         /**
          * The credentials provided were not necessarily invalid, but were not
@@ -157,6 +164,10 @@ public class APIError {
             if (exception instanceof GuacamoleStreamException)
                 return STREAM_ERROR;
 
+            // More information is required in order to establish a connection
+            if (exception instanceof GuacamoleInsufficientConnectionInformationException)
+                return INSUFFICIENT_CONNECTION_INFORMATION;
+
             // All other errors
             return INTERNAL_ERROR;
 
@@ -184,6 +195,14 @@ public class APIError {
         if (exception instanceof GuacamoleCredentialsException) {
             GuacamoleCredentialsException credentialsException = (GuacamoleCredentialsException) exception;
             this.expected = credentialsException.getCredentialsInfo().getFields();
+        }
+
+        // Add expected connection information if applicable
+        else if (exception instanceof GuacamoleInsufficientConnectionInformationException) {
+            GuacamoleInsufficientConnectionInformationException credentialsException = (
+                    GuacamoleInsufficientConnectionInformationException) exception;
+
+            this.expected = credentialsException.getAdditionalConnectionInformation().getFields();
         }
         else
             this.expected = null;

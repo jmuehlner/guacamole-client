@@ -205,6 +205,10 @@ angular.module('auth').factory('authenticationService', ['$injector',
             else if (error.type === Error.Type.INSUFFICIENT_CREDENTIALS)
                 $rootScope.$broadcast('guacInsufficientCredentials', parameters, error);
 
+            // Request more connection if existing connection parameters were not enough
+            else if (error.type === Error.Type.INSUFFICIENT_CONNECTION_INFORMATION)
+                $rootScope.$broadcast('guacInsufficientConnectionInformation', parameters, error);
+
             // Abort rendering of page if an internal error occurs
             else if (error.type === Error.Type.INTERNAL_ERROR)
                 $rootScope.$broadcast('guacFatalPageError', error);

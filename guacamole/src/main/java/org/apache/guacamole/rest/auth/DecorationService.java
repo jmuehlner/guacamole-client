@@ -83,9 +83,26 @@ public class DecorationService {
 
         // Repeatedly wrap the decorated UserContext with additional layers of
         // decoration for each remaining AuthenticationProvider
-        while (current.hasNext()) {
-            decorated = new DecoratedUserContext(current.next(), decorated,
-                    authenticatedUser, credentials);
+        try {
+            while (current.hasNext()) {
+                decorated = new DecoratedUserContext(current.next(), decorated,
+                        authenticatedUser, credentials);
+            }
+        }
+
+        catch (GuacamoleAuthenticationProcessException e) {
+
+            // TODO: call something like the below and stick it into the
+            // exception. this will tell the saml extension "hey, this dude
+            // you authed is totes legit, but auth failed overall due to this
+            // other whatever issue. gimme like some credz that I can give to
+            // the JS frontend so it can send them back next time so you can
+            // successfully auth the user, again." Or not. by default the auth
+            // provider will do nothing at all
+            //authenticatedUser.getAuthenticationProvider()
+            //        .getAuthContext(authenticatedUser);
+
+            throw e;
         }
 
         return decorated;

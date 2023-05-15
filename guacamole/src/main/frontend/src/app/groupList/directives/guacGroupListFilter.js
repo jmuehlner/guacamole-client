@@ -40,7 +40,7 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
             /**
              * The placeholder text to display within the filter input field
              * when no filter has been provided.
-             * 
+             *
              * @type String
              */
             placeholder : '&',

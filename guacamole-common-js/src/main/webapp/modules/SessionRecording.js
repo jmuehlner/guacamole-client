@@ -105,6 +105,16 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
     var KEYFRAME_TIME_INTERVAL = 5000;
 
     /**
+     * The minimum number of milliseconds which must elapse between key events
+     * before text can be split across multiple frames.
+     *
+     * @private
+     * @constant
+     * @type {Number}
+     */
+    var TYPED_TEXT_INTERVAL = 5000;
+
+    /**
      * All frames parsed from the provided blob.
      *
      * @private
@@ -376,6 +386,26 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
     playbackClient.getDisplay().showCursor(false);
 
     /**
+     * A key event batcher to split all key events in this recording into
+     * human-readable batches of text.
+     *
+     * @type {!Guacamole.KeyEventBatcher}
+     */
+    var keyEventBatcher = new Guacamole.KeyEventBatcher();
+
+    // Pass through any received batches to the recording onText handler
+    keyEventBatcher.onBatch = function onBatch(text, timestamp) {
+
+        // Don't call the callback if it was never set
+        if (!recording.onText)
+            return;
+
+        // Convert to a recording-relative timestamp and pass through
+        recording.onText(text, toRelativeTimestamp(timestamp));
+
+    };
+
+    /**
      * Handles a newly-received instruction, whether from the main Blob or a
      * tunnel, adding new frames and keyframes as necessary. Load progress is
      * reported via onprogress automatically.
@@ -421,6 +451,8 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
 
         }
 
+        else if (opcode === 'key')
+            keyEventBatcher.handleKeyEvent(args);
     };
 
     /**
@@ -486,6 +518,13 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
                     recordingBlob = new Blob([recordingBlob, instructionBuffer]);
                     instructionBuffer = '';
                 }
+
+                // If there's any typed text that's yet to be sent to the onText
+                // handler, send it now
+                var text = keyEventBatcher.getCurrentText();
+                var timestamp = keyEventBatcher.getCurrentTimestamp();
+                if (text && recording.onText)
+                    recording.onText(text, toRelativeTimestamp(timestamp));
 
                 // Consider recording loaded if tunnel has closed without errors
                 if (!errorEncountered)
@@ -871,6 +910,19 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
      * @event
      */
     this.onpause = null;
+
+    /**
+     * Fired whenever a new batch of typed text extracted from key events
+     * is available.
+     *
+     * @event
+     * @param {!String} text
+     *     The typed text associated with the batch of text.
+     *
+     * @param {!number} timestamp
+     *     The relative timestamp associated with the batch of text.
+     */
+    this.onText = null;
 
     /**
      * Fired whenever the playback position within the recording changes.

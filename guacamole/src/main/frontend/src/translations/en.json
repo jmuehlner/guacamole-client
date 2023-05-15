@@ -1,7 +1,7 @@
 {
-    
+
     "NAME" : "English",
-    
+
     "APP" : {
 
         "NAME"    : "Apache Guacamole",
@@ -42,7 +42,7 @@
         "ERROR_PASSWORD_BLANK"    : "Your password cannot be blank.",
         "ERROR_PASSWORD_MISMATCH" : "The provided passwords do not match.",
         "ERROR_SINGLE_FILE_ONLY"  : "Please upload only a single file at a time",
-        
+
         "FIELD_HEADER_PASSWORD"       : "Password:",
         "FIELD_HEADER_PASSWORD_AGAIN" : "Re-enter Password:",
 
@@ -150,7 +150,7 @@
         "SECTION_HEADER_DISPLAY"         : "Display",
         "SECTION_HEADER_FILE_TRANSFERS"  : "File Transfers",
         "SECTION_HEADER_INPUT_METHOD"    : "Input method",
-        
+
         "SECTION_HEADER_MOUSE_MODE"     : "Mouse emulation mode",
 
         "TEXT_ANONYMOUS_USER_JOINED"      : "An anonymous user has joined the connection.",
@@ -247,7 +247,7 @@
         "HELP_YAML_EXAMPLE"                 : "---\n  - name: conn1\n    protocol: vnc\n    parameters:\n      username: alice\n      password: pass1\n      hostname: conn1.web.com\n    group: ROOT\n    users:\n      - guac user 1\n      - guac user 2\n    groups:\n    - Connection 1 Users\n    attributes:\n      guacd-encryption: none\n  - name: conn2\n    protocol: rdp\n    parameters:\n      username: bob\n      password: pass2\n      hostname: conn2.web.com\n    group: ROOT/Parent Group\n    users:\n      - guac user 1\n    attributes:\n      guacd-encryption: none\n  - name: conn3\n    protocol: ssh\n    parameters:\n      username: carol\n      password: pass3\n      hostname: conn3.web.com\n    group: ROOT/Parent Group/Child Group\n    users:\n      - guac user 2\n      - guac user 3\n  - name: conn4\n    protocol: kubernetes",
 
         "INFO_CONNECTIONS_IMPORTED_SUCCESS" : "{NUMBER} {NUMBER, plural, one{connection} other{connections}} imported successfully.",
-        
+
         "SECTION_HEADER_CONNECTION_IMPORT"           : "Connection Import",
         "SECTION_HEADER_HELP_CONNECTION_IMPORT_FILE" : "Connection Import File Format",
         "SECTION_HEADER_CSV"                         : "CSV Format",
@@ -282,7 +282,7 @@
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
 
         "INFO_NO_RECENT_CONNECTIONS" : "No recent connections.",
-        
+
         "PASSWORD_CHANGED" : "Password changed.",
 
         "SECTION_HEADER_ALL_CONNECTIONS"    : "All Connections",
@@ -478,12 +478,17 @@
 
     "PLAYER" : {
 
-        "ACTION_CANCEL" : "@:APP.ACTION_CANCEL",
-        "ACTION_PAUSE"  : "@:APP.ACTION_PAUSE",
-        "ACTION_PLAY"   : "@:APP.ACTION_PLAY",
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_PAUSE"        : "@:APP.ACTION_PAUSE",
+        "ACTION_PLAY"         : "@:APP.ACTION_PLAY",
+        "ACTION_SHOW_KEY_LOG" : "Keystroke Log",
 
         "INFO_LOADING_RECORDING" : "Your recording is now being loaded. Please wait...",
-        "INFO_SEEK_IN_PROGRESS"  : "Seeking to the requested position. Please wait..."
+        "INFO_NO_KEY_LOG"        : "Keystroke Log Unavailable",
+        "INFO_NUMBER_OF_RESULTS" : "{RESULTS} {RESULTS, plural, one{Match} other{Matches}}",
+        "INFO_SEEK_IN_PROGRESS"  : "Seeking to the requested position. Please wait...",
+
+        "FIELD_PLACEHOLDER_TEXT_BATCH_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER"
 
     },
 
@@ -995,7 +1000,7 @@
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
         "HELP_CONNECTIONS"   : "Click or tap on a connection below to manage that connection. Depending on your access level, connections can be added and deleted, and their properties (protocol, hostname, port, etc.) can be changed.",
-        
+
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
 
         "SECTION_HEADER_CONNECTIONS"     : "Connections"
@@ -1021,7 +1026,7 @@
         "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Confirm New Password:",
         "FIELD_HEADER_TIMEZONE"           : "Timezone:",
         "FIELD_HEADER_USERNAME"           : "Username:",
-        
+
         "HELP_DEFAULT_INPUT_METHOD" : "The default input method determines how keyboard events are received by Guacamole. Changing this setting may be necessary when using a mobile device, or when typing through an IME. This setting can be overridden on a per-connection basis within the Guacamole menu.",
         "HELP_DEFAULT_MOUSE_MODE"   : "The default mouse emulation mode determines how the remote mouse will behave in new connections with respect to touches. This setting can be overridden on a per-connection basis within the Guacamole menu.",
         "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
@@ -1087,29 +1092,29 @@
     },
 
     "SETTINGS_SESSIONS" : {
-        
+
         "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
         "ACTION_DELETE"      : "Kill Sessions",
-        
+
         "DIALOG_HEADER_CONFIRM_DELETE" : "Kill Sessions",
         "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
-        
+
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
-        
+
         "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
         "HELP_SESSIONS" : "This page will be populated with currently-active connections. The connections listed and the ability to kill those connections is dependent upon your access level. If you wish to kill one or more sessions, check the box next to those sessions and click \"Kill Sessions\". Killing a session will immediately disconnect the user from the associated connection.",
-        
+
         "INFO_NO_SESSIONS" : "No active sessions",
 
         "SECTION_HEADER_SESSIONS" : "Active Sessions",
-        
+
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Connection name",
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Remote host",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Active since",
         "TABLE_HEADER_SESSION_USERNAME"        : "Username",
-        
+
         "TEXT_CONFIRM_DELETE" : "Are you sure you want to kill all selected sessions? The users using these sessions will be immediately disconnected."
 
     },

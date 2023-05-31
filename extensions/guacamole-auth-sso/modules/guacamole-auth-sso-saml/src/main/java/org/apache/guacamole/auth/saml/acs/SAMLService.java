@@ -37,6 +37,8 @@ import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.saml.conf.ConfigurationService;
 import org.apache.guacamole.auth.sso.IdentifierGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -45,6 +47,11 @@ import org.xml.sax.SAXException;
  */
 @Singleton
 public class SAMLService {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(SAMLService.class);
 
     /**
      * Service for retrieving SAML configuration information.
@@ -168,6 +175,30 @@ public class SAMLService {
         if (session == null)
             throw new GuacamoleSecurityException("\"RelayState\" value "
                     + "included with SAML response is not valid.");
+
+        // TODO: Only do if the HTTPS port is explicitly override in the settings
+        try {
+            URI originalUri = new URI(url);
+            logger.info("OLD AND BUSTED URL: {}", originalUri.toString());
+
+            URI newUri = new URI(
+                originalUri.getScheme(),
+                originalUri.getUserInfo(),
+                originalUri.getHost(),
+                8443, // LOL?
+                originalUri.getPath(),
+                originalUri.getQuery(),
+                originalUri.getFragment());
+            logger.info("NEW HOTNESS URL: {}", newUri.toString());
+
+            url = newUri.toString();
+
+        }
+
+        catch (URISyntaxException e) {
+            throw new GuacamoleServerException(
+                    "Invalid URI for ACS endpoint.", e);
+        }
 
         try {
 

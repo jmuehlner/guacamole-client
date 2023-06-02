@@ -77,6 +77,9 @@
  */
 angular.module('player').directive('guacPlayer', ['$injector', function guacPlayer($injector) {
 
+    // Required services
+    const $interval              = $injector.get('$interval');
+
     const config = {
         restrict : 'E',
         templateUrl : 'app/player/templates/player.html'
@@ -159,6 +162,39 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
          * @type {boolean}
          */
         var resumeAfterSeekRequest = false;
+
+        /**
+         * The minimum number of milliseconds that should occur between updates
+         * to the progress indicator.
+         *
+         * @type {number}
+         */
+        const MINIMUM_PROGRESS_REFRESH_INTERVAL = 1000;
+
+        /**
+         * An interval to ensure that the progress indicator will keep refreshing
+         * even if gaps between subsequent frames are longer than
+         * MINIMUM_PROGRESS_REFRESH_INTERVAL milliseconds.
+         *
+         * @type {number}
+         */
+        const progressRefreshInterval = $interval(() => {
+
+            // Do not update the progress if the recording isn't playing
+            if (!$scope.recording || !$scope.recording.isPlaying())
+                return;
+
+            // Advance the playback position
+            if ((Date.now() - lastProgressRefresh) > MINIMUM_PROGRESS_REFRESH_INTERVAL)
+                $scope.playbackPosition += MINIMUM_PROGRESS_REFRESH_INTERVAL;
+
+        }, MINIMUM_PROGRESS_REFRESH_INTERVAL);
+
+        /**
+         * The browser timestamp representing the last time that the progress
+         * indicator was updated.
+         */
+        let lastProgressRefresh = 0;
 
         /**
          * Formats the given number as a decimal string, adding leading zeroes
@@ -347,8 +383,10 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                 $scope.recording.onseek = function positionChanged(position, current, total) {
 
                     // Update current playback position while playing
-                    if ($scope.recording.isPlaying())
+                    if ($scope.recording.isPlaying()) {
                         $scope.playbackPosition = position;
+                        lastProgressRefresh = Date.now();
+                    }
 
                     // Update seek progress while seeking
                     else {
@@ -379,6 +417,7 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
         $scope.$on('$destroy', function playerDestroyed() {
             $scope.recording.pause();
             $scope.recording.abort();
+            $interval.cancel(progressRefreshInterval);
         });
 
     }];

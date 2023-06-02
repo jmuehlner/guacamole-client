@@ -482,8 +482,9 @@ Guacamole.SessionRecording = function SessionRecording(source) {
     };
 
     /**
-     * Searches through the given region of frames for the frame having a
-     * relative timestamp closest to the timestamp given.
+     * Searches through the given region of frames for the closest frame
+     * having a relative timestamp less than or equal to the to the given
+     * relative timestamp.
      *
      * @private
      * @param {!number} minIndex
@@ -504,9 +505,22 @@ Guacamole.SessionRecording = function SessionRecording(source) {
      */
     var findFrame = function findFrame(minIndex, maxIndex, timestamp) {
 
-        // Do not search if the region contains only one element
-        if (minIndex === maxIndex)
-            return minIndex;
+        // The region has only one frame - determine if it is before or after
+        // the requested timestamp
+        if (minIndex === maxIndex) {
+
+            // Skip checking if this is the very first frame - no frame could
+            // possibly be earlier
+            if (minIndex === 0)
+                return minIndex;
+
+            // If the closest frame occured after the requested timestamp,
+            // return the previous frame, which will be the closest with a
+            // timestamp before the requested timestamp
+            if (toRelativeTimestamp(frames[minIndex].timestamp) > timestamp)
+                return midIndex - 1;
+
+        }
 
         // Split search region into two halves
         var midIndex = Math.floor((minIndex + maxIndex) / 2);
@@ -653,7 +667,7 @@ Guacamole.SessionRecording = function SessionRecording(source) {
         }
 
         continueAfterRequiredDelay();
-        
+
     };
 
     /**
@@ -957,8 +971,31 @@ Guacamole.SessionRecording = function SessionRecording(source) {
 
         };
 
-        // Perform seek
-        seekToFrame(findFrame(0, frames.length - 1, position), seekCallback);
+        // Find the index of the closest frame at or before the requested position
+        var closestFrame = findFrame(0, frames.length - 1, position);
+
+        // Seek to the closest frame before or at the requested position
+        seekToFrame(closestFrame, function seekComplete() {
+
+            // Now that the seek to the previous frame is complete,
+            // call the onseek callback with the requested position
+            recording.onseek(position, 1, 1);
+
+            // Seek to the next frame with the delay between the requested
+            // position and the position of that frame
+            if (closestFrame < (frames.length - 1)) {
+                var nextFrame = closestFrame + 1;
+
+                // Schedule the next frame with the appropriate delay
+                var delay = toRelativeTimestamp(
+                    frames[nextFrame].timestamp) - position;
+                seekToFrame(nextFrame, seekCallback, delay);
+            }
+
+            // If there's no more frames, invoke the callback immediately
+            else
+                seekCallback();
+        });
 
     };
 

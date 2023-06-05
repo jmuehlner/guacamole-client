@@ -169,7 +169,16 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
          *
          * @type {number}
          */
-        const MINIMUM_PROGRESS_REFRESH_INTERVAL = 1000;
+        const MINIMUM_PROGRESS_REFRESH_INTERVAL = 500;
+
+        /**
+         * The browser timestamp representing the last time that the progress
+         * indicator was updated, either due to a new frame rendering, or due
+         * to the progress refresh interval timer.
+         *
+         * @type {number}
+         */
+        var lastProgressUpdateTimestamp = 0;
 
         /**
          * An interval to ensure that the progress indicator will keep refreshing
@@ -184,17 +193,22 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
             if (!$scope.recording || !$scope.recording.isPlaying())
                 return;
 
-            // Advance the playback position
-            if ((Date.now() - lastProgressRefresh) > MINIMUM_PROGRESS_REFRESH_INTERVAL)
-                $scope.playbackPosition += MINIMUM_PROGRESS_REFRESH_INTERVAL;
+            // Advance the playback position by the amount of time that has
+            // passed since the last update
+            if ((Date.now() - lastSeekTimestamp) > MINIMUM_PROGRESS_REFRESH_INTERVAL)
+                $scope.playbackPosition += (Date.now() - lastProgressUpdateTimestamp);
+
+            lastProgressUpdateTimestamp = Date.now();
 
         }, MINIMUM_PROGRESS_REFRESH_INTERVAL);
 
         /**
          * The browser timestamp representing the last time that the progress
-         * indicator was updated.
+         * indicator was updated due to a seek operation.
+         *
+         * @type {number}
          */
-        let lastProgressRefresh = 0;
+        let lastSeekTimestamp = 0;
 
         /**
          * Formats the given number as a decimal string, adding leading zeroes
@@ -385,7 +399,8 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                     // Update current playback position while playing
                     if ($scope.recording.isPlaying()) {
                         $scope.playbackPosition = position;
-                        lastProgressRefresh = Date.now();
+                        lastSeekTimestamp = Date.now();
+                        lastProgressUpdateTimestamp = lastSeekTimestamp;
                     }
 
                     // Update seek progress while seeking

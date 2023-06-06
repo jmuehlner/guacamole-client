@@ -723,11 +723,13 @@ Guacamole.SessionRecording = function SessionRecording(source) {
 
              // Calculate the real timestamp corresponding to when the next
              // frame begins, and how long the current frame has been displayed
-            var nextRealTimestamp = (next.timestamp - frameElapsed +
-                (- startVideoTimestamp + startRealTimestamp));
+            var nextRealTimestamp = (next.timestamp - frameElapsed -
+                    startVideoTimestamp + startRealTimestamp);
 
             // Advance to next frame after enough time has elapsed
-            seekToFrame(currentFrame + 1, function frameDelayElapsed() {
+            var nextFrame = currentFrame + 1;
+            seekToFrame(nextFrame, function frameDelayElapsed() {
+                currentPosition = toRelativeTimestamp(frames[nextFrame].timestamp);
                 continuePlayback();
             }, nextRealTimestamp);
 

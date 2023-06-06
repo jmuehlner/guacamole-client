@@ -178,7 +178,9 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
          *
          * @type {number}
          */
-        var lastProgressUpdateTimestamp = 0;
+        let lastProgressUpdateTimestamp = 0;
+
+        let theStart = Date.now();
 
         /**
          * An interval to ensure that the progress indicator will keep refreshing
@@ -199,6 +201,8 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                 $scope.playbackPosition += (Date.now() - lastProgressUpdateTimestamp);
 
             lastProgressUpdateTimestamp = Date.now();
+            console.log('Refresh:   ' + $scope.playbackPosition);
+            console.log('Real time: ' + (Date.now() - theStart));
 
         }, MINIMUM_PROGRESS_REFRESH_INTERVAL);
 
@@ -382,6 +386,7 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
 
                 // Notify listeners when playback has started/resumed
                 $scope.recording.onplay = function playbackStarted() {
+                    theStart = Date.now();
                     $scope.$emit('guacPlayerPlay');
                     $scope.$evalAsync();
                 };
@@ -399,6 +404,7 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                     // Update current playback position while playing
                     if ($scope.recording.isPlaying()) {
                         $scope.playbackPosition = position;
+                        console.log('Seek time: ' + $scope.playbackPosition);
                         lastSeekTimestamp = Date.now();
                         lastProgressUpdateTimestamp = lastSeekTimestamp;
                     }

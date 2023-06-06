@@ -77,9 +77,6 @@
  */
 angular.module('player').directive('guacPlayer', ['$injector', function guacPlayer($injector) {
 
-    // Required services
-    const $interval              = $injector.get('$interval');
-
     const config = {
         restrict : 'E',
         templateUrl : 'app/player/templates/player.html'
@@ -98,6 +95,14 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
 
     config.controller = ['$scope', '$element', '$injector',
         function guacPlayerController($scope) {
+
+        /**
+         * The minimum number of milliseconds that should occur between updates
+         * to the progress indicator.
+         *
+         * @type {number}
+         */
+        const PROGRESS_REFRESH_INTERVAL = 1000;
 
         /**
          * Guacamole.SessionRecording instance to be used to playback the
@@ -162,53 +167,6 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
          * @type {boolean}
          */
         var resumeAfterSeekRequest = false;
-
-        /**
-         * The minimum number of milliseconds that should occur between updates
-         * to the progress indicator.
-         *
-         * @type {number}
-         */
-        const MINIMUM_PROGRESS_REFRESH_INTERVAL = 500;
-
-        /**
-         * The browser timestamp representing the last time that the progress
-         * indicator was updated, either due to a new frame rendering, or due
-         * to the progress refresh interval timer.
-         *
-         * @type {number}
-         */
-        let lastProgressUpdateTimestamp = 0;
-
-        /**
-         * An interval to ensure that the progress indicator will keep refreshing
-         * even if gaps between subsequent frames are longer than
-         * MINIMUM_PROGRESS_REFRESH_INTERVAL milliseconds.
-         *
-         * @type {number}
-         */
-        const progressRefreshInterval = $interval(() => {
-
-            // Do not update the progress if the recording isn't playing
-            if (!$scope.recording || !$scope.recording.isPlaying())
-                return;
-
-            // Advance the playback position by the amount of time that has
-            // passed since the last update
-            if ((Date.now() - lastSeekTimestamp) > MINIMUM_PROGRESS_REFRESH_INTERVAL)
-                $scope.playbackPosition += (Date.now() - lastProgressUpdateTimestamp);
-
-            lastProgressUpdateTimestamp = Date.now();
-
-        }, MINIMUM_PROGRESS_REFRESH_INTERVAL);
-
-        /**
-         * The browser timestamp representing the last time that the progress
-         * indicator was updated due to a seek operation.
-         *
-         * @type {number}
-         */
-        let lastSeekTimestamp = 0;
 
         /**
          * Formats the given number as a decimal string, adding leading zeroes
@@ -353,7 +311,8 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
             // Otherwise, begin loading the provided recording
             else {
 
-                $scope.recording = new Guacamole.SessionRecording(src);
+                $scope.recording = new Guacamole.SessionRecording(
+                        src, PROGRESS_REFRESH_INTERVAL);
 
                 // Begin downloading the recording
                 $scope.recording.connect();
@@ -397,11 +356,8 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                 $scope.recording.onseek = function positionChanged(position, current, total) {
 
                     // Update current playback position while playing
-                    if ($scope.recording.isPlaying()) {
+                    if ($scope.recording.isPlaying())
                         $scope.playbackPosition = position;
-                        lastSeekTimestamp = Date.now();
-                        lastProgressUpdateTimestamp = lastSeekTimestamp;
-                    }
 
                     // Update seek progress while seeking
                     else {
@@ -432,7 +388,6 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
         $scope.$on('$destroy', function playerDestroyed() {
             $scope.recording.pause();
             $scope.recording.abort();
-            $interval.cancel(progressRefreshInterval);
         });
 
     }];

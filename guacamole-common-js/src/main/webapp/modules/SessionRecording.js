@@ -32,8 +32,15 @@ var Guacamole = Guacamole || {};
  * @param {!Blob|Guacamole.Tunnel} source
  *     The Blob from which the instructions of the recording should
  *     be read.
+ * @param {number} refreshInterval
+ *     The minimum number of milliseconds between updates to the recording
+ *     position through the provided onseek() callback. If non-positive, this
+ *     parameter will be ignored, and the recording position will only be
+ *     updated when seek requests are made, or when new frames are rendered.
+ *     If a positive value is provided here, the abort() function of this
+ *     recording MUST be called in order to clean up the interval.
  */
-Guacamole.SessionRecording = function SessionRecording(source) {
+Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) {
 
     /**
      * Reference to this Guacamole.SessionRecording.
@@ -148,22 +155,53 @@ Guacamole.SessionRecording = function SessionRecording(source) {
     var startVideoTimestamp = null;
 
     /**
-     * The real-world timestamp when playback began, in milliseconds. If
-     * playback is not in progress, this will be null.
+     * The current position within the recording, in milliseconds.
      *
      * @private
-     * @type {number}
+     * @type {!number}
      */
-    var startRealTimestamp = null;
+    var currentPosition = 0;
 
     /**
-     * The real-world timestamp when the last frame was rendered, in
-     * milliseconds.
+     * Updates the position of the recording if it's playing, incrementing the
+     * value by the provided refreshInterval, and calling the onseek handler
+     * with the new value, if a handler was was provided.
+     */
+    function refreshPosition() {
+
+        // Only update the position if the recording is currently playing
+        if (!recording.isPlaying())
+            return;
+
+        // If the last frame has already played, the recording is over and no
+        // position updating is needed
+        if (currentFrame >= (frames.length - 1))
+            return;
+
+        var nextFrame = frames[currentFrame + 1];
+        var nextFramePosition = toRelativeTimestamp(nextFrame.timestamp);
+
+        // The recording is playing, and the next frame hasn't been reached
+        // yet, so bump the position by the provided interval
+        if (currentPosition < nextFramePosition)
+            currentPosition += refreshInterval;
+
+        // Update the position using the onseek handler, if provided
+        if (recording.onseek)
+            recording.onseek(currentPosition);
+    }
+
+    /**
+     * The interval executor to ensure that the position will be updated at
+     * least once every refreshInterval milliseconds, if that parameter was
+     * provided to the constructor. If the parameter was not provided, or was
+     * invalid, this will be null.
      *
      * @private
      * @type {number}
      */
-    var lastFrameRealTimestamp = null;
+    var refreshIntervalExecutor = refreshInterval ?
+            setInterval(refreshPosition, refreshInterval) : null;
 
     /**
      * An object containing a single "aborted" property which is set to
@@ -186,17 +224,6 @@ Guacamole.SessionRecording = function SessionRecording(source) {
      * @type {!number}
      */
     var frameStart = 0;
-
-    /**
-     * The current position within the recording, in milliseconds. This field
-     * will only be updated when a seek request is executed, a new frame is
-     * rendered, or the video is paused. It will not be automatically updated
-     * during gaps between frames, which may be arbitrarily lengthy.
-     *
-     * @private
-     * @type {!number}
-     */
-    var currentPosition = 0;
 
     /**
      * The byte offset within the recording blob of the character which
@@ -538,7 +565,7 @@ Guacamole.SessionRecording = function SessionRecording(source) {
             // return the previous frame, which will be the closest with a
             // timestamp before the requested timestamp
             if (toRelativeTimestamp(frames[minIndex].timestamp) > timestamp)
-                return midIndex - 1;
+                return minIndex - 1;
 
         }
 
@@ -573,9 +600,6 @@ Guacamole.SessionRecording = function SessionRecording(source) {
      *     The callback to invoke once replay of the frame has completed.
      */
     var replayFrame = function replayFrame(index, callback) {
-
-        // Record the time that this frame was rendered
-        lastFrameRealTimestamp = Date.now();
 
         var frame = frames[index];
 
@@ -719,35 +743,16 @@ Guacamole.SessionRecording = function SessionRecording(source) {
         // If frames remain after advancing, schedule next frame
         if (currentFrame + 1 < frames.length) {
 
-            // The relative timestamp of the last frame
-            var lastPosition = (currentFrame >= 0
-                    ? toRelativeTimestamp(frames[currentFrame].timestamp)
-                    : 0);
-
             // Pull the upcoming frame
             var next = frames[currentFrame + 1];
 
-            // Determine how long the current frame had been displayed
-            var frameElapsed;
-            if (currentFrame >= 0)
-                frameElapsed = currentPosition - lastPosition;
-
-            // If no frame has yet been rendered, it cannot have been displayed
-            // for any period of time
-            else
-                frameElapsed = 0;
-
-             // Calculate the real timestamp corresponding to when the next
-             // frame begins, and how long the current frame has been displayed
-            var nextRealTimestamp = (
-                Date.now() + toRelativeTimestamp(next.timestamp) - lastPosition - frameElapsed);
+            // Add the offset to the next frame timestamp to calculate the delay
+            var delay = toRelativeTimestamp(next.timestamp) - currentPosition;
 
             // Advance to next frame after enough time has elapsed
-            var nextFrame = currentFrame + 1;
-            seekToFrame(nextFrame, function frameDelayElapsed() {
-                currentPosition = toRelativeTimestamp(frames[nextFrame].timestamp);
+            seekToFrame(currentFrame + 1, function frameDelayElapsed() {
                 continuePlayback();
-            }, nextRealTimestamp);
+            }, Date.now() + delay);
 
         }
 
@@ -871,6 +876,9 @@ Guacamole.SessionRecording = function SessionRecording(source) {
             if (tunnel)
                 tunnel.disconnect();
 
+            if (refreshIntervalExecutor)
+                clearInterval(refreshIntervalExecutor);
+
         }
     };
 
@@ -947,29 +955,18 @@ Guacamole.SessionRecording = function SessionRecording(source) {
      */
     this.play = function play() {
 
-        // If playback is not already in progress, begin playback
-        if (!recording.isPlaying()) {
-
-            // If resuming a paused recording, offset the frame render timestamp
-            // into the past by the duration that the frame had been displayed,
-            // ensuring that everything will line up correctly again if the
-            // recording is paused/resumed again before the next frame
-            lastFrameRealTimestamp = Date.now();
-            if (currentFrame !== -1)
-                lastFrameRealTimestamp -= (currentPosition
-                        - toRelativeTimestamp(frames[currentFrame].timestamp));
+        // If playback is not already in progress and frames remain,
+        // begin playback
+        if (!recording.isPlaying() && currentFrame + 1 < frames.length) {
 
             // Notify that playback is starting
             if (recording.onplay)
                 recording.onplay();
 
             // Store timestamp of playback start for relative scheduling of
-            // future frames if any remain
-            if (currentFrame + 1 < frames.length) {
-                var next = frames[currentFrame + 1];
-                startVideoTimestamp = next.timestamp;
-                startRealTimestamp = new Date().getTime();
-            }
+            // future frames
+            var next = frames[currentFrame + 1];
+            startVideoTimestamp = next.timestamp;
 
             // Begin playback of video
             continuePlayback();
@@ -997,19 +994,6 @@ Guacamole.SessionRecording = function SessionRecording(source) {
         // Do not seek if no frames exist
         if (frames.length === 0)
             return;
-
-        // Do not attempt to seek to before the start of the recording
-        if (position < 0)
-            position = 0;
-
-        // Do not attempt to seek to after the end of the recording
-        var lastPosition = toRelativeTimestamp(
-                (frames[frames.length] - 1).timestamp);
-        if (position > lastPosition)
-            position = lastPosition;
-
-        // Update the current position
-        currentPosition = position;
 
         // Abort active seek operation, if any
         recording.cancel();
@@ -1042,24 +1026,27 @@ Guacamole.SessionRecording = function SessionRecording(source) {
         // Seek to the closest frame before or at the requested position
         seekToFrame(closestFrame, function seekComplete() {
 
-            // Now that the seek to the previous frame is complete,
-            // call the onseek callback with the requested position
-            recording.onseek(position, 1, 1);
+            // Update the current position to the requested position
+            // and invoke the the onseek callback. Note that this is the
+            // position provided to this function, NOT the position of the
+            // frame that was just seeked
+            currentPosition = position;
+            if (recording.onseek)
+                recording.onseek(position);
 
             // Seek to the next frame with the delay between the requested
             // position and the position of that frame
-            if (closestFrame < (frames.length - 1)) {
+            if (closestFrame < (frames.length - 1))
                 var nextFrame = closestFrame + 1;
 
                 // Schedule the next frame with the appropriate delay
                 var delay = toRelativeTimestamp(
                     frames[nextFrame].timestamp) - position;
-                seekToFrame(nextFrame, seekCallback, Date.now() + delay);
-            }
+                seekToFrame(nextFrame, function () {}, Date.now() + delay);
 
-            // If there's no more frames, invoke the callback immediately
-            else
-                seekCallback();
+            // The next frame has been scheduled, so the seek is complete
+            seekCallback();
+
         });
 
     };
@@ -1093,23 +1080,12 @@ Guacamole.SessionRecording = function SessionRecording(source) {
         // Stop playback only if playback is in progress
         if (recording.isPlaying()) {
 
-            // The number of milliseconds since the start of the current frame
-            var frameElapsed = (lastFrameRealTimestamp
-                    ? (Date.now() - lastFrameRealTimestamp)
-                    : 0);
-
-            // Add the time that the frame has been displayed to the start
-            // of said frame to get the current position
-            currentPosition = (frameElapsed +
-                    toRelativeTimestamp(frames[currentFrame].timestamp));
-
             // Notify that playback is stopping
             if (recording.onpause)
                 recording.onpause();
 
             // Playback is stopped
             startVideoTimestamp = null;
-            startRealTimestamp = null;
 
         }
 

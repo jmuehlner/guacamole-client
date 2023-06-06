@@ -157,6 +157,15 @@ Guacamole.SessionRecording = function SessionRecording(source) {
     var startRealTimestamp = null;
 
     /**
+     * The real-world timestamp when the last frame was rendered, in
+     * milliseconds.
+     *
+     * @private
+     * @type {number}
+     */
+    var lastFrameRealTimestamp = null;
+
+    /**
      * An object containing a single "aborted" property which is set to
      * true if the in-progress seek operation should be aborted. If no seek
      * operation is in progress, this will be null.
@@ -565,6 +574,9 @@ Guacamole.SessionRecording = function SessionRecording(source) {
      */
     var replayFrame = function replayFrame(index, callback) {
 
+        // Record the time that this frame was rendered
+        lastFrameRealTimestamp = Date.now();
+
         var frame = frames[index];
 
         // Replay all instructions within the retrieved frame
@@ -707,14 +719,18 @@ Guacamole.SessionRecording = function SessionRecording(source) {
         // If frames remain after advancing, schedule next frame
         if (currentFrame + 1 < frames.length) {
 
+            // The relative timestamp of the last frame
+            var lastPosition = (currentFrame >= 0
+                    ? toRelativeTimestamp(frames[currentFrame].timestamp)
+                    : 0);
+
             // Pull the upcoming frame
             var next = frames[currentFrame + 1];
 
             // Determine how long the current frame had been displayed
             var frameElapsed;
             if (currentFrame >= 0)
-                frameElapsed = (currentPosition -
-                        toRelativeTimestamp(frames[currentFrame].timestamp));
+                frameElapsed = currentPosition - lastPosition;
 
             // If no frame has yet been rendered, it cannot have been displayed
             // for any period of time
@@ -723,8 +739,8 @@ Guacamole.SessionRecording = function SessionRecording(source) {
 
              // Calculate the real timestamp corresponding to when the next
              // frame begins, and how long the current frame has been displayed
-            var nextRealTimestamp = (next.timestamp - frameElapsed -
-                    startVideoTimestamp + startRealTimestamp);
+            var nextRealTimestamp = (
+                Date.now() + toRelativeTimestamp(next.timestamp) - lastPosition - frameElapsed);
 
             // Advance to next frame after enough time has elapsed
             var nextFrame = currentFrame + 1;
@@ -934,6 +950,15 @@ Guacamole.SessionRecording = function SessionRecording(source) {
         // If playback is not already in progress, begin playback
         if (!recording.isPlaying()) {
 
+            // If resuming a paused recording, offset the frame render timestamp
+            // into the past by the duration that the frame had been displayed,
+            // ensuring that everything will line up correctly again if the
+            // recording is paused/resumed again before the next frame
+            lastFrameRealTimestamp = Date.now();
+            if (currentFrame !== -1)
+                lastFrameRealTimestamp -= (currentPosition
+                        - toRelativeTimestamp(frames[currentFrame].timestamp));
+
             // Notify that playback is starting
             if (recording.onplay)
                 recording.onplay();
@@ -1029,7 +1054,7 @@ Guacamole.SessionRecording = function SessionRecording(source) {
                 // Schedule the next frame with the appropriate delay
                 var delay = toRelativeTimestamp(
                     frames[nextFrame].timestamp) - position;
-                seekToFrame(nextFrame, seekCallback, delay);
+                seekToFrame(nextFrame, seekCallback, Date.now() + delay);
             }
 
             // If there's no more frames, invoke the callback immediately
@@ -1069,7 +1094,9 @@ Guacamole.SessionRecording = function SessionRecording(source) {
         if (recording.isPlaying()) {
 
             // The number of milliseconds since the start of the current frame
-            var frameElapsed = (Date.now() - startRealTimestamp);
+            var frameElapsed = (lastFrameRealTimestamp
+                    ? (Date.now() - lastFrameRealTimestamp)
+                    : 0);
 
             // Add the time that the frame has been displayed to the start
             // of said frame to get the current position

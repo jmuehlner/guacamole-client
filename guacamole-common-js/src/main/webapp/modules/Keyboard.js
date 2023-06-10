@@ -395,7 +395,7 @@ Guacamole.Keyboard = function Keyboard(element) {
         13:  [0xFF0D], // enter
         16:  [0xFFE1, 0xFFE1, 0xFFE2], // shift
         17:  [0xFFE3, 0xFFE3, 0xFFE4], // ctrl
-        18:  [0xFFE9, 0xFFE9, 0xFFEA], // alt
+        18:  [0xFFE9, 0xFFE9, 0xFE03], // alt
         19:  [0xFF13], // pause/break
         20:  [0xFFE5], // caps lock
         27:  [0xFF1B], // escape
@@ -456,7 +456,7 @@ Guacamole.Keyboard = function Keyboard(element) {
         "Again": [0xFF66],
         "AllCandidates": [0xFF3D],
         "Alphanumeric": [0xFF30],
-        "Alt": [0xFFE9, 0xFFE9, 0xFFEA],
+        "Alt": [0xFFE9, 0xFFE9, 0xFE03],
         "Attn": [0xFD0E],
         "AltGraph": [0xFE03],
         "ArrowDown": [0xFF54],
@@ -891,7 +891,6 @@ Guacamole.Keyboard = function Keyboard(element) {
             // Press and release key for current character
             guac_keyboard.press(keysym);
             guac_keyboard.release(keysym);
-
         }
 
     };
@@ -1372,7 +1371,7 @@ Guacamole.Keyboard = function Keyboard(element) {
          * @param {!InputEvent} e
          *     The "input" event to handle.
          */
-        var handleInput = function handleInput(e) {
+        function handleInput(e) {
 
             // Only intercept if handler set
             if (!guac_keyboard.onkeydown && !guac_keyboard.onkeyup) return;
@@ -1386,7 +1385,7 @@ Guacamole.Keyboard = function Keyboard(element) {
                 guac_keyboard.type(e.data);
             }
 
-        };
+        }
 
         /**
          * Handles the given "compositionend" event, typing the data within the
@@ -1398,7 +1397,7 @@ Guacamole.Keyboard = function Keyboard(element) {
          * @param {!CompositionEvent} e
          *     The "compositionend" event to handle.
          */
-        var handleComposition = function handleComposition(e) {
+        function handleComposition(e) {
 
             // Only intercept if handler set
             if (!guac_keyboard.onkeydown && !guac_keyboard.onkeyup) return;
@@ -1412,7 +1411,7 @@ Guacamole.Keyboard = function Keyboard(element) {
                 guac_keyboard.type(e.data);
             }
 
-        };
+        }
 
         // Automatically type text entered into the wrapped field
         element.addEventListener("input", handleInput, false);

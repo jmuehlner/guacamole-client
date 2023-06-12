@@ -1315,7 +1315,7 @@ Guacamole.Keyboard = function Keyboard(element) {
 
             // Ignore (but do not prevent) the "composition" keycode sent by some
             // browsers when an IME is in use (see: http://lists.w3.org/Archives/Public/www-dom/2010JulSep/att-0182/keyCode-spec.html)
-            if (keydownEvent.keyCode === 229)
+            if (e.isComposing || keydownEvent.keyCode === 229)
                 return;
 
             // Log event
@@ -1364,7 +1364,6 @@ Guacamole.Keyboard = function Keyboard(element) {
 
         /**
          * Handles the given "input" event, typing the data within the input text.
-         *
          *
          * @private
          * @param {!InputEvent} e

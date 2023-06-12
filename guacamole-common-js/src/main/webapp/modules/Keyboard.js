@@ -1388,6 +1388,26 @@ Guacamole.Keyboard = function Keyboard(element) {
         }
 
         /**
+         * Handles the given "compositionstart" event, automatically removing
+         * the "input" event handler, as "input" events should only be handled
+         * IFF composition events are not provided by the browser.
+         *
+         * @private
+         * @param {!CompositionEvent} e
+         *     The "compositionstart" event to handle.
+         */
+        function handleCompositionStart(e) {
+
+            // Ignore events which have already been handled
+            if (!markEvent(e)) return;
+
+            // Remove the "input" event handler now that the browser is known
+            // to send composition events
+            element.removeEventListener("input", handleInput, false);
+
+        }
+
+        /**
          * Handles the given "compositionend" event, typing the data within the
          * composed text. If the event is complete (composed text is provided),
          * handling of "input" events is suspended, as such events may conflict
@@ -1397,7 +1417,7 @@ Guacamole.Keyboard = function Keyboard(element) {
          * @param {!CompositionEvent} e
          *     The "compositionend" event to handle.
          */
-        function handleComposition(e) {
+        function handleCompositionEnd(e) {
 
             // Only intercept if handler set
             if (!guac_keyboard.onkeydown && !guac_keyboard.onkeyup) return;
@@ -1415,7 +1435,8 @@ Guacamole.Keyboard = function Keyboard(element) {
 
         // Automatically type text entered into the wrapped field
         element.addEventListener("input", handleInput, false);
-        element.addEventListener("compositionend", handleComposition, false);
+        element.addEventListener("compositionend", handleCompositionEnd, false);
+        element.addEventListener("compositionstart", handleCompositionStart, false);
 
     };
 

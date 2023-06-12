@@ -64,15 +64,9 @@ Guacamole.InputSink = function InputSink() {
         field.value = '';
     }, false);
 
-    // Keep field clear when modofied via composition events
+    // Keep field clear when modified via composition events
     field.addEventListener("compositionend", function clearCompletedComposition(e) {
         if (e.data)
-            field.value = '';
-    }, false);
-
-    // Keep field clear when modofied via input events
-    field.addEventListener("input", function clearCompletedInput(e) {
-        if (e.data && !e.isComposing)
             field.value = '';
     }, false);
 

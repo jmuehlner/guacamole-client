@@ -1364,8 +1364,7 @@ Guacamole.Keyboard = function Keyboard(element) {
 
         /**
          * Handles the given "input" event, typing the data within the input text.
-         * If the event is complete (text is provided), handling of "compositionend"
-         * events is suspended, as such events may conflict with input events.
+         *
          *
          * @private
          * @param {!InputEvent} e
@@ -1380,10 +1379,8 @@ Guacamole.Keyboard = function Keyboard(element) {
             if (!markEvent(e)) return;
 
             // Type all content written
-            if (e.data && !e.isComposing) {
-                element.removeEventListener("compositionend", handleComposition, false);
+            if (e.data && !e.isComposing)
                 guac_keyboard.type(e.data);
-            }
 
         }
 
@@ -1409,9 +1406,7 @@ Guacamole.Keyboard = function Keyboard(element) {
 
         /**
          * Handles the given "compositionend" event, typing the data within the
-         * composed text. If the event is complete (composed text is provided),
-         * handling of "input" events is suspended, as such events may conflict
-         * with composition events.
+         * composed text.
          *
          * @private
          * @param {!CompositionEvent} e
@@ -1426,10 +1421,8 @@ Guacamole.Keyboard = function Keyboard(element) {
             if (!markEvent(e)) return;
 
             // Type all content written
-            if (e.data) {
-                element.removeEventListener("input", handleInput, false);
+            if (e.data)
                 guac_keyboard.type(e.data);
-            }
 
         }
 

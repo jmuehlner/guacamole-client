@@ -1395,9 +1395,6 @@ Guacamole.Keyboard = function Keyboard(element) {
          */
         function handleCompositionStart(e) {
 
-            // Ignore events which have already been handled
-            if (!markEvent(e)) return;
-
             // Remove the "input" event handler now that the browser is known
             // to send composition events
             element.removeEventListener("input", handleInput, false);

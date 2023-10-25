@@ -79,6 +79,7 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
 
     // Required services
     const keyEventDisplayService = $injector.get('keyEventDisplayService');
+    const playerHeatMapService= $injector.get('playerHeatMapService');
     const playerTimeService = $injector.get('playerTimeService');
 
     const config = {
@@ -162,6 +163,24 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
         $scope.showKeyLog = false;
 
         /**
+         * A smoothed array of frame counts per time interval, optimized for
+         * generating an activity graph showing the relative number of frames
+         * rendered throughout the recording.
+         *
+         * @type {Number[]}
+         */
+        $scope.frameHeatMap = [];
+
+        /**
+         * A smoothed array of text event counts per time interval, optimized
+         * for generating an activity graph showing the relative number of
+         * text events typed throughout the recording.
+         *
+         * @type {Number[]}
+         */
+        $scope.textHeatMap = [];
+
+        /**
          * Whether a seek request is currently in progress. A seek request is
          * in progress if the user is attempting to change the current playback
          * position (the user is manipulating the playback position slider).
@@ -178,6 +197,22 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
          * @type {boolean}
          */
         var resumeAfterSeekRequest = false;
+
+        /**
+         * The recording-relative timestamp of each frame of the recording that
+         * has been processed so far.
+         *
+         * @type {Number[]}
+         */
+        var frameTimestamps = [];
+
+        /**
+         * The recording-relative timestamp of each text event that has been
+         * processed so far.
+         *
+         * @type {Number[]}
+         */
+        var textTimestamps = [];
 
         /**
          * Return true if any batches of key event logs are available for this
@@ -326,6 +361,12 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                     $scope.operationMessage = null;
                     $scope.$emit('guacPlayerLoaded');
                     $scope.$evalAsync();
+
+                    // Generate heat maps for rendered frames and typed text
+                    $scope.frameHeatMap = (
+                        playerHeatMapService.generateHeatMapPath(frameTimestamps));
+                    $scope.textHeatMap = (
+                        playerHeatMapService.generateHeatMapPath(textTimestamps));
                 };
 
                 // Notify listeners if an error occurs
@@ -341,6 +382,9 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                     $scope.operationProgress = src.size ? current / src.size : 0;
                     $scope.$emit('guacPlayerProgress', duration, current);
                     $scope.$evalAsync();
+
+                    // Store the timestamp of the just-received frame
+                    frameTimestamps.push(duration);
                 };
 
                 // Notify listeners when playback has started/resumed
@@ -361,6 +405,8 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                     // Convert to a display-optimized format
                     $scope.textBatches = (
                             keyEventDisplayService.parseEvents(events));
+
+                    textTimestamps = events.map(event => event.timestamp);
 
                 };
 

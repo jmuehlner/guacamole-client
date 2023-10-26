@@ -17,6 +17,9 @@
  * under the License.
  */
 
+import { curveCatmullRom } from 'd3-shape';
+import { path } from 'd3-path';
+
  /*
   * NOTE: This session recording player implementation is based on the Session
   * Recording Player for Glyptodon Enterprise which is available at
@@ -124,8 +127,22 @@ angular.module('player').factory('playerHeatMapService', [() => {
         });
     }
 
-    function createPath(activityBuckets) {
+    function createPath(bucketizedData) {
 
+        const curvedPath = path();
+        const curve = curveCatmullRom(curvedPath);
+
+        curve.lineStart();
+
+        for (let x = 0; x < bucketizedData.length; x++) {
+            const y = bucketizedData[x];
+            curve.point(x, y);
+        }
+
+        curve.lineEnd();
+
+        // Generate the SVG path for this curve
+        console.log(curvedPath.toString());
     }
 
     const service = {};
@@ -196,6 +213,9 @@ angular.module('player').factory('playerHeatMapService', [() => {
 
         // Smooth the data for better aesthetics before creating the path
         const smoothed = smooth(buckets, kernel);
+
+        // Create an SVG path based on the smoothed data
+        return createPath(smoothed);
 
     }
 

@@ -367,6 +367,12 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                         playerHeatMapService.generateHeatMapPath(frameTimestamps));
                     $scope.textHeatMap = (
                         playerHeatMapService.generateHeatMapPath(textTimestamps));
+
+                    console.log('frameHeatMap');
+                    console.log($scope.frameHeatMap);
+
+                    console.log('textHeatMap');
+                    console.log($scope.textHeatMap);
                 };
 
                 // Notify listeners if an error occurs

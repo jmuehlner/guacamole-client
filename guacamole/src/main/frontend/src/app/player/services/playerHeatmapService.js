@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { curveCatmullRom as CurveCatmullRom } from 'd3-shape';
-import { path as Path } from 'd3-path';
+import { curveCatmullRom } from 'd3-shape';
+import { path } from 'd3-path';
 
  /*
   * NOTE: This session recording player implementation is based on the Session
@@ -51,74 +51,44 @@ import { path as Path } from 'd3-path';
  * A service for generating heat maps of activity levels per time interval,
  * for session recording playback.
  */
-angular.module('player').factory('playerHeatMapService', [() => {
+angular.module('player').factory('playerHeatmapService', [() => {
 
     /**
-     * A default Gaussian smoothing kernel with a sigma of 4. This kernel
-     * should produce reasonable looking histograms for most recordings.
+     * A default, relatively-gentle Gaussian smoothing kernel. This kernel
+     * should help heatmaps look a bit less jagged, while not reducing fidelity
+     * very much.
      *
      * @type {Number[]}
      */
-    const DEFAULT_GAUSSIAN_KERNEL = [0.121, 0.142, 0.156, 0.162, 0.156, 0.142, 0.121];
+    const GAUSSIAN_KERNEL = [0.0013, 0.1573, 0.6827, 0.1573, 0.0013];
 
     /**
-     * A default Gaussian smoothing kernel with a FHWM of 4. This kernel
-     * should produce reasonable looking histograms for most recordings.
+     * The number of buckets
      *
      * @type {Number[]}
      */
-    const DEFAULT_NUM_BUCKETS = 100;
+    const NUM_BUCKETS = 100;
 
     /**
-     * The target size of the largest value in the final path. The path will be
-     * scaled vertically to to ensure that it can be easily displayed with common
-     * styling.
-     */
-    const PATH_HEIGHT = 100;
-
-    /**
-     * The target width of the final path. The path will be scaled horizontally
-     * to to ensure that it can be easily displayed with common styling.
-     */
-    const PATH_WIDTH = 1000;
-
-    /**
-     * Given a list of values to smooth out, and a smoothing kernel, produce
-     * a smoothed data set with the same length as the original provided
-     * list. If the provided kernel is invalid, a warning will be logged and
-     * the provided list will be returned unchanged.
+     * Given a list of values to smooth out, produce a smoothed data set with
+     * the same length as the original provided list.
      *
      * @param {!Number[]} values
      *     The list of histogram values to smooth out.
      *
-     * @param {!Number[]} kernel
-     *     The kernel to use when smoothing the values. This would usually be,
-     *     but is not required to be, a Gaussian smoothing kernel. It must be
-     *     an odd length.
-     *
      * @returns
-     *     The smoothed value array, or the original array if the provided
-     *     smoothing kernel is not valid.
+     *     The smoothed value array.
      */
-    function smooth(values, kernel) {
-
-        // Ensure that all provided kernels are on odd length, otherwise
-        // the smoothing function will not work
-        if (kernel.length % 2 !== 1) {
-            console.warn("Smoothing kernel must be an odd length.");
-            return values;
-        }
+    function smooth(values) {
 
         // The starting offset into the values array for each calculation
-        const lookBack = Math.floor(kernel.length / 2);
+        const lookBack = Math.floor(GAUSSIAN_KERNEL.length / 2);
 
         // Apply the smoothing kernel to each value in the provided array
         return _.map(values, (value, index) => {
 
-            // Total up the weighted values for each position in the kernel.
-            // This total is guaranteed to already be normalized since the
-            // kernel sums to 1.
-            return _.reduce(kernel, (total, weight, kernelIndex) => {
+            // Total up the weighted values for each position in the kernel
+            return _.reduce(GAUSSIAN_KERNEL, (total, weight, kernelIndex) => {
 
                 // The offset into the original values array for the kernel
                 const valuesOffset = kernelIndex - lookBack;
@@ -139,27 +109,41 @@ angular.module('player').factory('playerHeatMapService', [() => {
         });
     }
 
-    function createPath(bucketizedData, maxBucketValue) {
+    /**
+     * Given an array of values, with each value representing an activity count
+     * during a bucket of time, generate a smooth curve, scaled to PATH_HEIGHT
+     * height, and PATH_WIDTH width.
+     *
+     * @param {!Number[]} bucketizedData
+     *     The bucketized counts to create an SVG path from.
+     *
+     * @param {!Number} maxBucketValue
+     *     The size of the largest value in the bucketized data.
+     *
+     * @param {!Number} height
+     *     The target height, in pixels, of the highest point in the heatmap.
+     *
+     * @param {!Number} width
+     *     The target width, in pixels, of the heatmap.
+     *
+     * @returns
+     *     An SVG path representing a smooth curve, passing through all points
+     *     in the provided data.
+     */
+    function createPath(bucketizedData, maxBucketValue, height, width) {
 
-        // Return an empty path if the input data is invalid
-        if (!bucketizedData || !bucketizedData.length) {
-            logger.warn('Can\'t create path from empty data array.')
-            return '';
-        }
-
-        // Calculate scaling factor to ensure that paths are all the same height
-        const maxValue = _.max(bucketizedData);
-        const yScalingFactor = PATH_HEIGHT / maxBucketValue;
+        // Calculate scaling factor to ensure that paths are all the same heigh
+        const yScalingFactor = height / maxBucketValue;
 
         // Scale a given Y value appropriately
-        const scaleYValue = yValue => PATH_HEIGHT - (yValue * yScalingFactor);
+        const scaleYValue = yValue => height - (yValue * yScalingFactor);
 
         // Calculate scaling factor to ensure that paths are all the same width
-        const xScalingFactor = PATH_WIDTH / bucketizedData.length;
+        const xScalingFactor = width / bucketizedData.length;
 
         // Construct a continuous curved path
-        const path = Path();
-        const curve = CurveCatmullRom(path);
+        const curvedPath = path();
+        const curve = curveCatmullRom(curvedPath);
 
         curve.lineStart();
 
@@ -179,10 +163,10 @@ angular.module('player').factory('playerHeatMapService', [() => {
 
         // Move back to 0 to complete the path
         curve.lineEnd();
-        path.lineTo(PATH_WIDTH, scaleYValue(0));
+        curvedPath.lineTo(width, scaleYValue(0));
 
         // Generate the SVG path for this curve
-        const rawPathText = path.toString();
+        const rawPathText = curvedPath.toString();
 
         // The SVG path as generated by D3 starts with a move to the first data
         // point. This means that when the path ends and the subpath is closed,
@@ -210,52 +194,51 @@ angular.module('player').factory('playerHeatMapService', [() => {
 
     /**
      * Given a raw array of timestamps indicating when events of a certain type
-     * occured during a record, generate and return a smoothed, graphing-ready
-     * array of values indicating how many events occured during each equal-length
-     * bucket. Optionally, the number of buckets and the smoothing kernel can also
-     * be supplied.
+     * occured during a record, generate and return a smoothed SVG path
+     * indicating how many events occured during each equal-length bucket.
      *
      * @param {!Number[]} timestamps
      *     A raw array of timestamps, one for every relevant event. These
-     *     must be monotonically increasing, or behavior is undefined.
+     *     must be monotonically increasing.
      *
-     * @param {Number} numBucket=DEFAULT_NUM_BUCKETS
-     *     The number of entries that should be returned in the final graphable array.
+     * @param {!Number} height
+     *     The target height, in pixels, of the highest point in the heatmap.
      *
-     * @param {Number[]} kernel=DEFAULT_GAUSSIAN_KERNEL
-     *     The kernel that should be used for smoothing the data in the returned
-     *     graphable array. If provided, it must sum to 1 and be an odd length.
+     * @param {!Number} width
+     *     The target width, in pixels, of the heatmap.
      *
      * @returns
-     *     A smoothed, graphable array containing counts of activity during each
-     *     bucket of time, as extracted from the provided timestamps.
+     *     A smoothed, graphable SVG path representing levels of activity over
+     *     time, as extracted from the provided timestamps.
      */
-    service.generateHeatMapPath = (timestamps, numBuckets, kernel) => {
+    service.generateHeatmapPath = (timestamps, height, width) => {
 
-        // Use the default number of buckets if not overriden
-        if (!numBuckets)
-            numBuckets = DEFAULT_NUM_BUCKETS;
+        // The height and width must both be valid in order to create the path
+        if (!height || !width) {
+            console.warn("Heatmap height and width must be positive.");
+            return '';
+        }
+
+        // If no timestamps are available, no path can be created
+        if (!timestamps || !timestamps.length)
+            return '';
 
         // An initially empty array containing no activity in any bucket
-        const buckets = new Array(numBuckets).fill(0);
+        const buckets = new Array(NUM_BUCKETS).fill(0);
 
-        // If no events occured, return the still-empty array
+        // If no events occured, return the an empty path
         if (!timestamps.length)
-            return buckets;
-
-        // Use the default gaussian smoothing kernel if not overriden
-        if (!kernel)
-            kernel = DEFAULT_GAUSSIAN_KERNEL;
+            return '';
 
         // Determine the time range and bucket granularity
         const first = timestamps[0];
         const last  = timestamps[timestamps.length - 1];
         const duration = last - first;
-        const bucketDuration = duration / numBuckets;
+        const bucketDuration = duration / NUM_BUCKETS;
 
         // If the duration is invalid, return the still-empty array
         if (duration <= 0)
-            return buckets;
+            return '';
 
         let maxBucketValue = 0;
 
@@ -267,7 +250,7 @@ angular.module('player').factory('playerHeatMapService', [() => {
             // bucket, move to the appropriate bucket
             if (timestamp >= (currentBucketIndex + 1) * bucketDuration)
                 currentBucketIndex = Math.min(
-                    Math.floor((timestamp / bucketDuration)), numBuckets - 1);
+                    Math.floor((timestamp / bucketDuration)), NUM_BUCKETS - 1);
 
             // Increment the count for the current bucket
             buckets[currentBucketIndex]++;
@@ -279,10 +262,10 @@ angular.module('player').factory('playerHeatMapService', [() => {
         });
 
         // Smooth the data for better aesthetics before creating the path
-        const smoothed = smooth(buckets, kernel);
+        const smoothed = smooth(buckets);
 
         // Create an SVG path based on the smoothed data
-        return createPath(smoothed, maxBucketValue);
+        return createPath(smoothed, maxBucketValue, height, width);
 
     }
 

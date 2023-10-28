@@ -28,6 +28,14 @@
            ng-model="playbackPosition"
            ng-on-change="commitSeekRequest()">
 
+    <svg class="heat-map frame-events" ng-attr-view_box="0 0 {{ HEATMAP_WIDTH }} {{ HEATMAP_HEIGHT }}" preserveAspectRatio="none">
+        <path ng-attr-d="{{ frameHeatmap }}"/>
+    </svg>
+
+    <svg class="heat-map key-events" ng-attr-view_box="0 0 {{ HEATMAP_WIDTH }} {{ HEATMAP_HEIGHT }}" preserveAspectRatio="none">
+        <path ng-attr-d="{{ keyHeatmap }}"/>
+    </svg>
+
     <div class="guac-player-buttons">
 
         <!-- Play button -->

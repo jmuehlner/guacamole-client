@@ -112,3 +112,34 @@
     -o-transition-delay: 0s;
     transition-delay: 0s;
 }
+
+.settings.connectionHistoryPlayer .guac-player-controls .heat-map  {
+    opacity: 0;
+    position: absolute;
+    height: 50px;
+    bottom: 43px;
+    width: 100%;
+    z-index: 100;
+    pointer-events: none;
+
+    -webkit-transition: opacity 0.1s linear 0.1s;
+    -moz-transition: opacity 0.1s linear 0.1s;
+    -o-transition: opacity 0.1s linear 0.1s;
+    transition: opacity 0.1s linear 0.1s;
+}
+
+.settings.connectionHistoryPlayer .guac-player-controls:hover .heat-map  {
+    opacity: 0.5;
+}
+
+.settings.connectionHistoryPlayer .heat-map.key-events {
+
+    /* Convert to #5BA300 color */
+    filter: invert(69%) sepia(80%) saturate(5092%) hue-rotate(54deg) brightness(96%) contrast(101%);
+}
+
+.settings.connectionHistoryPlayer .heat-map.frame-events {
+
+    /* Convert to #FFFFFF color */
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%) contrast(103%);
+}

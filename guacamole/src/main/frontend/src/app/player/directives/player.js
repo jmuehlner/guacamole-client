@@ -79,7 +79,7 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
 
     // Required services
     const keyEventDisplayService = $injector.get('keyEventDisplayService');
-    const playerHeatMapService= $injector.get('playerHeatMapService');
+    const playerHeatmapService= $injector.get('playerHeatmapService');
     const playerTimeService = $injector.get('playerTimeService');
 
     const config = {
@@ -163,22 +163,36 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
         $scope.showKeyLog = false;
 
         /**
-         * A smoothed array of frame counts per time interval, optimized for
-         * generating an activity graph showing the relative number of frames
-         * rendered throughout the recording.
-         *
-         * @type {Number[]}
+         * The height, in pixels, of the SVG heatmap paths. Note that this is not
+         * necessarily the actual rendered height, just the initial size of the
+         * SVG path before any styling is applied.
          */
-        $scope.frameHeatMap = [];
+        $scope.HEATMAP_HEIGHT = 100;
 
         /**
-         * A smoothed array of text event counts per time interval, optimized
-         * for generating an activity graph showing the relative number of
-         * text events typed throughout the recording.
-         *
-         * @type {Number[]}
+         * The width, in pixels, of the SVG heatmap paths. Note that this is not
+         * necessarily the actual rendered width, just the initial size of the
+         * SVG path before any styling is applied.
          */
-        $scope.textHeatMap = [];
+        $scope.HEATMAP_WIDTH = 1000;
+
+        /**
+         * An SVG path describing a smoothed curve that visualizes the relative
+         * number of frames rendered throughout the recording - i.e. a heatmap
+         * of screen updates.
+         *
+         * @type {String}
+         */
+        $scope.frameHeatmap = '';
+
+        /**
+         * An SVG path describing a smoothed curve that visualizes the relative
+         * number of key events recorded throughout the recording - i.e. a
+         * heatmap of key events.
+         *
+         * @type {String}
+         */
+        $scope.keyHeatmap = '';
 
         /**
          * Whether a seek request is currently in progress. A seek request is
@@ -212,7 +226,7 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
          *
          * @type {Number[]}
          */
-        var textTimestamps = [];
+        var keyTimestamps = [];
 
         /**
          * Return true if any batches of key event logs are available for this
@@ -356,23 +370,21 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                 // Begin downloading the recording
                 $scope.recording.connect();
 
-                // Notify listeners when the recording is completely loaded
+                // Notify listeners and set any heatmap paths
+                // when the recording is completely loaded
                 $scope.recording.onload = function recordingLoaded() {
                     $scope.operationMessage = null;
                     $scope.$emit('guacPlayerLoaded');
                     $scope.$evalAsync();
 
                     // Generate heat maps for rendered frames and typed text
-                    $scope.frameHeatMap = (
-                        playerHeatMapService.generateHeatMapPath(frameTimestamps));
-                    $scope.textHeatMap = (
-                        playerHeatMapService.generateHeatMapPath(textTimestamps));
+                    $scope.frameHeatmap = (
+                        playerHeatmapService.generateHeatmapPath(
+                            frameTimestamps, $scope.HEATMAP_HEIGHT, $scope.HEATMAP_WIDTH));
+                    $scope.keyHeatmap = (
+                        playerHeatmapService.generateHeatmapPath(
+                            keyTimestamps, $scope.HEATMAP_HEIGHT, $scope.HEATMAP_WIDTH));
 
-                    console.log('frameHeatMap');
-                    console.log($scope.frameHeatMap);
-
-                    console.log('textHeatMap');
-                    console.log($scope.textHeatMap);
                 };
 
                 // Notify listeners if an error occurs
@@ -412,7 +424,7 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                     $scope.textBatches = (
                             keyEventDisplayService.parseEvents(events));
 
-                    textTimestamps = events.map(event => event.timestamp);
+                    keyTimestamps = events.map(event => event.timestamp);
 
                 };
 

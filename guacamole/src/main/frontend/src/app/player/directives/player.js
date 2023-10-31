@@ -177,6 +177,25 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
         $scope.HEATMAP_WIDTH = 1000;
 
         /**
+         * The maximum number of key events per millisecond to display in the
+         * key event heatmap. Any key event rates exceeding this value will be
+         * capped at this rate to ensure that unsually large spikes don't make
+         * swamp the rest of the data.
+         *
+         * Note: This is 6 keys per second (events include both presses and
+         * releases) - equivalent to ~88 words per minute typed.
+         */
+        const KEY_EVENT_RATE_CAP = 12 / 1000;
+
+        /**
+         * The maximum number of frames per millisecond to display in the
+         * frame heatmap. Any frame rates exceeding this value will be
+         * capped at this rate to ensure that unsually large spikes don't make
+         * swamp the rest of the data.
+         */
+        const FRAME_RATE_CAP = 10 / 1000;
+
+        /**
          * An SVG path describing a smoothed curve that visualizes the relative
          * number of frames rendered throughout the recording - i.e. a heatmap
          * of screen updates.
@@ -377,13 +396,17 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                     $scope.$emit('guacPlayerLoaded');
                     $scope.$evalAsync();
 
+                    const recordingDuration = $scope.recording.getDuration();
+
                     // Generate heat maps for rendered frames and typed text
                     $scope.frameHeatmap = (
                         playerHeatmapService.generateHeatmapPath(
-                            frameTimestamps, $scope.HEATMAP_HEIGHT, $scope.HEATMAP_WIDTH));
+                            frameTimestamps, recordingDuration, FRAME_RATE_CAP,
+                            $scope.HEATMAP_HEIGHT, $scope.HEATMAP_WIDTH));
                     $scope.keyHeatmap = (
                         playerHeatmapService.generateHeatmapPath(
-                            keyTimestamps, $scope.HEATMAP_HEIGHT, $scope.HEATMAP_WIDTH));
+                            keyTimestamps, recordingDuration, KEY_EVENT_RATE_CAP,
+                            $scope.HEATMAP_HEIGHT, $scope.HEATMAP_WIDTH));
 
                 };
 

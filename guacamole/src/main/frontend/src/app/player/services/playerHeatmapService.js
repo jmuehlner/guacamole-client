@@ -201,6 +201,16 @@ angular.module('player').factory('playerHeatmapService', [() => {
      *     A raw array of timestamps, one for every relevant event. These
      *     must be monotonically increasing.
      *
+     * @param {!Number} duration
+     *     The duration over which the heatmap should apply. This value may
+     *     be greater than the maximum timestamp value, in which case the path
+     *     will drop to 0 after the last timestamp in the provided array.
+     *
+     * @param {Number} maxRate
+     *     The maximum number of events per millisecond that should be displayed
+     *     in the final path. Any rates over this amount will just be capped at
+     *     this value.
+     *
      * @param {!Number} height
      *     The target height, in pixels, of the highest point in the heatmap.
      *
@@ -211,7 +221,7 @@ angular.module('player').factory('playerHeatmapService', [() => {
      *     A smoothed, graphable SVG path representing levels of activity over
      *     time, as extracted from the provided timestamps.
      */
-    service.generateHeatmapPath = (timestamps, height, width) => {
+    service.generateHeatmapPath = (timestamps, duration, maxRate, height, width) => {
 
         // The height and width must both be valid in order to create the path
         if (!height || !width) {
@@ -230,11 +240,11 @@ angular.module('player').factory('playerHeatmapService', [() => {
         if (!timestamps.length)
             return '';
 
-        // Determine the time range and bucket granularity
-        const first = timestamps[0];
-        const last  = timestamps[timestamps.length - 1];
-        const duration = last - first;
+        // Determine the bucket granularity
         const bucketDuration = duration / NUM_BUCKETS;
+
+        // The rate-limited maximum number of events that any bucket can have,
+        const maxPossibleBucketValue = Math.floor(bucketDuration * maxRate);
 
         // If the duration is invalid, return the still-empty array
         if (duration <= 0)
@@ -252,12 +262,17 @@ angular.module('player').factory('playerHeatmapService', [() => {
                 currentBucketIndex = Math.min(
                     Math.floor((timestamp / bucketDuration)), NUM_BUCKETS - 1);
 
-            // Increment the count for the current bucket
-            buckets[currentBucketIndex]++;
+            // Do not record events that exceed the maximum allowable rate
+            if (buckets[currentBucketIndex] >= maxPossibleBucketValue)
+                buckets[currentBucketIndex] = maxPossibleBucketValue;
+
+            else
+                // Increment the count for the current bucket
+                buckets[currentBucketIndex]++;
 
             // Keep track of the maximum value seen so far
-            if (buckets[currentBucketIndex] > maxBucketValue)
-                maxBucketValue = buckets[currentBucketIndex];
+            maxBucketValue = Math.max(
+                maxBucketValue, buckets[currentBucketIndex]);
 
         });
 

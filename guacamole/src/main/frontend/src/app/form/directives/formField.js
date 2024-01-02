@@ -68,7 +68,15 @@ angular.module('form').directive('guacFormField', [function formField() {
              *
              * @type Boolean
              */
-            focused : '='
+            focused : '=',
+
+            /**
+             * A zero-argument callback that, if implemented by the form, immediately store
+             * the current value of the model. If not implemented, this will be a no-op.
+             *
+             * @type Function
+             */
+            updateField : '&'
 
         },
         templateUrl: 'app/form/templates/formField.html',

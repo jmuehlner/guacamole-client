@@ -79,7 +79,15 @@ angular.module('form').directive('guacForm', [function form() {
              *
              * @type String
              */
-            focused : '='
+            focused : '=',
+
+            /**
+             * A callback that, if provided, accepts the name of a field,
+             * indicating a request that the value of the model be immediately
+             * updated in the underlying storage mechanism. By default, this
+             * operation will be a no-op.
+             */
+            updateField: '&'
 
         },
         templateUrl: 'app/form/templates/form.html',
@@ -265,6 +273,21 @@ angular.module('form').directive('guacForm', [function form() {
                 return false;
 
             };
+
+            /**
+             * Return a callback that will invoke the updateField callback (if any)
+             * provided to this form with the provided field name, requesting an
+             * immediate storage of the current field value. If the callback was not
+             * provided, this will be a no-op.
+             */
+            $scope.updateFormField = function updateFormField() {
+
+                return (fieldName) =>
+
+                    // If a field update callback was provided, invoke it
+                    $scope.updateField && $scope.updateField(fieldName);
+
+            }
 
         }] // end controller
     };

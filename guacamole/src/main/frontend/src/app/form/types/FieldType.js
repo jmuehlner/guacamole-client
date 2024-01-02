@@ -78,6 +78,12 @@ angular.module('form').factory('FieldType', [function defineFieldType() {
          * model:
          *     The current String value of the field, if any.
          *
+         * updateModel:
+         *     A zero-argument callback that will request an that the current
+         *     new field value be stored immediately when invoked. This
+         *     functionality may not always be implemented - in that case this
+         *     callback should just be a no-op.
+         *
          * @type String
          */
         this.controller = template.controller;

@@ -275,19 +275,20 @@ angular.module('form').directive('guacForm', [function form() {
             };
 
             /**
-             * Return a callback that will invoke the updateField callback (if any)
-             * provided to this form with the provided field name, requesting an
-             * immediate storage of the current field value. If the callback was not
-             * provided, this will be a no-op.
+             * Invoke the updateField callback (if any) provided to this form
+             * with the provided field name, requesting an immediate storage
+             * of the current field value. If the callback was not provided,
+             * this will be a no-op.
+             *
+             * @param {String} fieldName
+             *     The name of the field that should be updated.
              */
-            $scope.updateFormField = function updateFormField() {
-
-                return (fieldName) =>
+            $scope.updateFormField = function updateFormField(fieldName) {
 
                     // If a field update callback was provided, invoke it
-                    $scope.updateField && $scope.updateField(fieldName);
+                    $scope.updateField && $scope.updateField({name: fieldName});
 
-            }
+            };
 
         }] // end controller
     };

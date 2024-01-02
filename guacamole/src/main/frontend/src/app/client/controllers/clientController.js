@@ -457,9 +457,10 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // Set the argument value for the provided argument name, using
         // the value currently set in the connection parameters
-        if (client)
+        if ($scope.focusedClient)
             ManagedClient.setArgument(
-                    client, name, $scope.menu.connectionParameters[name]);
+                    $scope.focusedClient, name,
+                    $scope.menu.connectionParameters[name]);
     }
 
     // Show/hide UI elements depending on input method

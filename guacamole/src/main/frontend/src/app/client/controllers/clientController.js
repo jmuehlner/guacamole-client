@@ -445,24 +445,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     };
 
-    /**
-     * Same the argument with the provided name to the value currently set
-     * for that connection parameter. These values will also be saved when
-     * menu is closed if this function is never invoked.
-     *
-     * @param {String} name
-     *     The name of the argument / connection parameter to be saved.
-     */
-    $scope.updateParameterValue = function updateParameterValue(name) {
-
-        // Set the argument value for the provided argument name, using
-        // the value currently set in the connection parameters
-        if ($scope.focusedClient)
-            ManagedClient.setArgument(
-                    $scope.focusedClient, name,
-                    $scope.menu.connectionParameters[name]);
-    }
-
     // Show/hide UI elements depending on input method
     $scope.$watch('menu.inputMethod', function setInputMethod(inputMethod) {
 

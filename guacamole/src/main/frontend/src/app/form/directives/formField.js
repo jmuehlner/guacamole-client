@@ -71,12 +71,11 @@ angular.module('form').directive('guacFormField', [function formField() {
             focused : '=',
 
             /**
-             * A zero-argument callback that, if implemented by the form, immediately store
-             * the current value of the model. If not implemented, this will be a no-op.
+             * The client associated with this form, if any.
              *
-             * @type Function
+             * @type ManagedClient
              */
-            updateField : '&'
+            client: '='
 
         },
         templateUrl: 'app/form/templates/formField.html',

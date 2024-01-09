@@ -17,6 +17,7 @@
  * under the License.
  */
 
+/* global _ */
 
 /**
  * A directive that allows editing of a collection of fields.
@@ -246,6 +247,28 @@ angular.module('form').directive('guacForm', [function form() {
                 return field && (field.name in $scope.values);
 
             };
+
+
+            /**
+             * Returns whether the given field should be disabled (read-only)
+             * when presented to the current user.
+             *
+             * @param {Field} field
+             *     The field to check.
+             *
+             * @returns {Boolean}
+             *     true if the given field should be disabled, false otherwise.
+             */
+            $scope.isDisabled = function isDisabled(field) {
+
+                /*
+                 * The field is disabled if either the form as a whole is disabled,
+                 * or if a client is provided to the directive, and the field is
+                 * marked as pending.
+                 */
+                return $scope.disabled ||
+                        _.get($scope.client, ['arguments', field.name, 'pending']);
+            }
 
             /**
              * Returns whether at least one of the given fields should be

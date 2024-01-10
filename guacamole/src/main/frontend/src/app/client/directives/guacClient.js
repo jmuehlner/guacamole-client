@@ -213,6 +213,9 @@ angular.module('client').directive('guacClient', [function guacClient() {
             if (!client || !display)
                 return;
 
+            // Send any mouse events up to be handled by a parent
+            $scope.$emit('guacClientMouseEvent', event);
+
             event.stopPropagation();
             event.preventDefault();
 
@@ -262,6 +265,9 @@ angular.module('client').directive('guacClient', [function guacClient() {
             // or display are not yet available
             if (!client || !display)
                 return;
+
+                // Send any touch events up to be handled by a parent
+                $scope.$emit('guacClientTouchEvent', event);
 
             event.preventDefault();
 

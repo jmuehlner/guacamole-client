@@ -470,6 +470,18 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     });
 
+    // Broadcast any mouse events caught from clients back down to the rest
+    // of the client page
+    $scope.$on('guacClientMouseEvent', (angularEvent, mouseEvent) => {
+        $scope.$broadcast('guacMouseEvent', mouseEvent);
+    });
+
+    // Broadcast any touch events caught from clients back down to the rest
+    // of the client page
+    $scope.$on('guacClientTouchEvent', (angularEvent, touchEvent) => {
+        $scope.$broadcast('guacTouchEvent', touchEvent);
+    });
+
     // Automatically track and cache the currently-focused client
     $scope.$on('guacClientFocused', function focusedClientChanged(event, newFocusedClient) {
 

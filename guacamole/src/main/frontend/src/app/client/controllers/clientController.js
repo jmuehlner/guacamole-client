@@ -139,6 +139,21 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     };
 
+    /**
+     * True if and only if a "guacFieldFocused" event was received, and a
+     * corresponding "guacFieldBlurred" event has not yet been received.
+     * This is intended to allow fields to receive keyboard input even when
+     * the menu is not being shown.
+     *
+     * @type {boolean}
+     */
+    $scope.fieldIsFocused = false;
+
+    // Enable and disable the custom field focused state as the relevant
+    // events are received
+    $scope.$on('guacFieldFocused', () => $scope.fieldIsFocused = true);
+    $scope.$on('guacFieldBlurred', () => $scope.fieldIsFocused = false);
+
     // Convenience method for closing the menu
     $scope.closeMenu = function closeMenu() {
         $scope.menu.shown = false;
@@ -611,15 +626,17 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         }
 
-        // Prevent all keydown events while menu is open
-        else if ($scope.menu.shown)
+        // Prevent all keydown events while menu is open, or if a field has
+        // explicity requested the focused state
+        else if ($scope.menu.shown || $scope.fieldIsFocused)
             event.preventDefault();
 
     });
 
-    // Prevent all keyup events while menu is open
+    // Prevent all keyup events while menu is open,
+    // or while a custom field is focused.
     $scope.$on('guacBeforeKeyup', function incomingKeyup(event, keysym, keyboard) {
-        if ($scope.menu.shown)
+        if ($scope.menu.shown || $scope.fieldIsFocused)
             event.preventDefault();
     });
 
